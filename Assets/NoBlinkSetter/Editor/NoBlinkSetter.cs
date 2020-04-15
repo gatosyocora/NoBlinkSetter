@@ -6,6 +6,7 @@ using VRCSDK2;
 using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEditor.Animations;
+using System.IO;
 
 // ver 1.1
 // © 2019 gatosyocora
