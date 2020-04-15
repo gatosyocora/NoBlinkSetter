@@ -61,3 +61,5 @@ crashlytics-build.properties
 Assets/*
 !Assets/NoBlinkSetter/
 Assets/NoBlinkSetter/Animations/
+Assets/NoBlinkSetter/AFK System/sample/
+Assets/NoBlinkSetter/AFK System/sample.meta
