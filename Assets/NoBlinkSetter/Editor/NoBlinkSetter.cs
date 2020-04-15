@@ -171,7 +171,7 @@ namespace VRCDeveloperTool
 
                     if (GUILayout.Button("Select", GUILayout.Width(100f)))
                     {
-                        saveFolderPath = OpenFolderSelector(saveFolderPath);
+                        saveFolderPath = OpenFolderSelector("Select save folder", saveFolderPath);
                     }
                 }
 
@@ -535,6 +535,12 @@ namespace VRCDeveloperTool
             return AssetDatabase.GUIDToAssetPath(guid);
         }
 
+        /// <summary>
+        /// フォルダを選択するダイアログを表示
+        /// </summary>
+        /// <param name="selectorText"></param>
+        /// <param name="startFolder"></param>
+        /// <returns></returns>
         private string OpenFolderSelector(string selectorText, string startFolder = null)
         {
             if (string.IsNullOrEmpty(startFolder))
