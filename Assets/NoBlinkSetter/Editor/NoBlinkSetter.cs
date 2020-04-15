@@ -25,11 +25,11 @@ namespace VRCDeveloperTool
         private bool isSettingNoBlink = false;
 
         private string noBlinkSetterFolderPath;
+        private string saveFolderPath;
 
         private const string NOBLINK_ANIMATOR_PATH = "/OriginFiles/blink reset.controller";
         private const string NOBLINK_ANIMATION_PATH = "/OriginFiles/blink reset.anim";
         private const string NOBLINK_PREFAB_FOR_EYETRACKING_PATH = "/OriginFiles/Body.prefab";
-        private const string SAVE_FOLDER_PATH = "/Animations/";
 
         private const string TARGET_STATE_NAME = "blink reset";
         private const string NO_BLINK_ANIMATOR_OBJ_NAME = "blink reset";
@@ -309,6 +309,19 @@ namespace VRCDeveloperTool
 
             standingAnimController = avatar.CustomStandingAnims;
             sittingAnimController = avatar.CustomSittingAnims;
+
+            saveFolderPath = Path.GetDirectoryName(AssetDatabase.GetAssetPath(avatar.CustomStandingAnims));
+            Debug.Log(saveFolderPath);
+
+            if (string.IsNullOrEmpty(saveFolderPath))
+            {
+                string animationFolderPath = noBlinkSetterFolderPath + "/Animations";
+                if (!Directory.Exists(animationFolderPath))
+                {
+                    AssetDatabase.CreateFolder(noBlinkSetterFolderPath, "Animations");
+                }
+                saveFolderPath = animationFolderPath;
+            }
         }
 
         /// <summary>
@@ -318,7 +331,7 @@ namespace VRCDeveloperTool
         /// <returns></returns>
         private AnimatorController CreateNoBlinkAnimatorController(string fileName, string folderPath)
         {
-            var new_assetsPath = AssetDatabase.GenerateUniqueAssetPath(folderPath + SAVE_FOLDER_PATH + fileName + ".controller");
+            var new_assetsPath = AssetDatabase.GenerateUniqueAssetPath(saveFolderPath +"/"+ fileName + ".controller");
             AssetDatabase.CopyAsset(folderPath + NOBLINK_ANIMATOR_PATH, new_assetsPath);
             var noBlinkAnimatorController_new = AssetDatabase.LoadAssetAtPath<AnimatorController>(new_assetsPath);
 
@@ -332,7 +345,7 @@ namespace VRCDeveloperTool
         /// <returns></returns>
         private AnimationClip CreateNoBlinkAnimationClip(string fileName, string folderPath)
         {
-            var new_assetsPath = AssetDatabase.GenerateUniqueAssetPath(folderPath + SAVE_FOLDER_PATH + fileName + ".anim");
+            var new_assetsPath = AssetDatabase.GenerateUniqueAssetPath(saveFolderPath + "/" + fileName + ".anim");
             AssetDatabase.CopyAsset(folderPath + NOBLINK_ANIMATION_PATH, new_assetsPath);
 
             var noBlinkAnim_new = AssetDatabase.LoadAssetAtPath<AnimationClip>(new_assetsPath);
@@ -458,7 +471,7 @@ namespace VRCDeveloperTool
                 if (containForBlendShape)
                 {
                     // ファイルを複製
-                    AssetDatabase.CreateAsset(animClip, AssetDatabase.GenerateUniqueAssetPath(noBlinkSetterFolderPath + SAVE_FOLDER_PATH + fileName + ".anim"));
+                    AssetDatabase.CreateAsset(animClip, AssetDatabase.GenerateUniqueAssetPath(saveFolderPath + fileName + ".anim"));
                     AssetDatabase.SaveAssets();
                     AssetDatabase.Refresh();
 
