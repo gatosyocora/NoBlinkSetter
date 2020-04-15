@@ -163,8 +163,23 @@ namespace VRCDeveloperTool
                     }
                 }
 
+                EditorGUILayout.Space();
+
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    saveFolderPath = EditorGUILayout.TextField("SaveFolder", saveFolderPath);
+
+                    if (GUILayout.Button("Select", GUILayout.Width(100f)))
+                    {
+                        saveFolderPath = OpenFolderSelector(saveFolderPath);
+                    }
+                }
+
+                EditorGUILayout.Space();
 
                 hasEyeTracking = EditorGUILayout.ToggleLeft("EyeTracking対応アバター", hasEyeTracking);
+
+                EditorGUILayout.Space();
 
             }
 
@@ -518,6 +533,23 @@ namespace VRCDeveloperTool
         {
             var guid = AssetDatabase.FindAssets(folderName + " t:Folder").FirstOrDefault();
             return AssetDatabase.GUIDToAssetPath(guid);
+        }
+
+        private string OpenFolderSelector(string selectorText, string startFolder = null)
+        {
+            if (string.IsNullOrEmpty(startFolder))
+            {
+                startFolder = "Assets";
+            }
+
+            var selectedFolderPath = EditorUtility.OpenFolderPanel(selectorText, startFolder, string.Empty);
+            selectedFolderPath = FileUtil.GetProjectRelativePath(selectedFolderPath);
+
+            if (string.IsNullOrEmpty(selectedFolderPath))
+            {
+                selectedFolderPath = "Assets";
+            }
+            return selectedFolderPath;
         }
     }
 
