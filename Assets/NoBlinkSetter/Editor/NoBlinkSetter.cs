@@ -23,11 +23,12 @@ namespace VRCDeveloperTool
 
         private bool isSettingNoBlink = false;
 
-        private const string MASTER_PATH = "Assets/NoBlinkSetter/";
-        private const string NOBLINK_ANIMATOR_PATH = MASTER_PATH + "OriginFiles/blink reset.controller";
-        private const string NOBLINK_ANIMATION_PATH = MASTER_PATH + "OriginFiles/blink reset.anim";
-        private const string NOBLINK_PREFAB_FOR_EYETRACKING_PATH = MASTER_PATH + "OriginFiles/Body.prefab";
-        private const string SAVE_FOLDER_PATH = MASTER_PATH + "Animations/";
+        private string noBlinkSetterFolderPath;
+
+        private const string NOBLINK_ANIMATOR_PATH = "/OriginFiles/blink reset.controller";
+        private const string NOBLINK_ANIMATION_PATH = "/OriginFiles/blink reset.anim";
+        private const string NOBLINK_PREFAB_FOR_EYETRACKING_PATH = "/OriginFiles/Body.prefab";
+        private const string SAVE_FOLDER_PATH = "/Animations/";
 
         private const string TARGET_STATE_NAME = "blink reset";
         private const string NO_BLINK_ANIMATOR_OBJ_NAME = "blink reset";
@@ -44,6 +45,11 @@ namespace VRCDeveloperTool
         {
             if (m_avatar != null)
                 GetAvatarInfo(m_avatar);
+        }
+
+        private void OnEnable()
+        {
+            noBlinkSetterFolderPath = GetFolderPathFromName("NoBlinkSetter");
         }
 
         private void OnGUI()
@@ -206,7 +212,7 @@ namespace VRCDeveloperTool
                 noBlinkAnimatorObj.transform.localScale = Vector3.one;
 
                 // まばたき防止Animatorを設定
-                var noBlinkAnimatorController = CreateNoBlinkAnimatorController(objNoBlink.name);
+                var noBlinkAnimatorController = CreateNoBlinkAnimatorController(objNoBlink.name, noBlinkSetterFolderPath);
                 var noBlinkAnimator = noBlinkAnimatorObj.AddComponent<Animator>();
                 noBlinkAnimator.runtimeAnimatorController = noBlinkAnimatorController;
                 noBlinkAnimator.enabled = false;
@@ -219,7 +225,7 @@ namespace VRCDeveloperTool
                 noBlinkAnimatorObj.transform.parent = objNoBlink.transform;
 
                 // まばたき防止Animationを設定
-                var noBlinkAnim = CreateNoBlinkAnimationClip(objNoBlink.name);
+                var noBlinkAnim = CreateNoBlinkAnimationClip(objNoBlink.name, noBlinkSetterFolderPath);
                 var path = GetHierarchyPathFromObj1ToObj2(noBlinkAnimatorObj, blinkAnimator.gameObject);
                 ChangeAnimationKeysPath(ref noBlinkAnim, path);
                 var states = noBlinkAnimatorController.layers[0].stateMachine.states.ToList();
@@ -247,7 +253,7 @@ namespace VRCDeveloperTool
             // アイトラするようにする
             if (hasEyeTracking)
             {
-                var originalbBodyPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(NOBLINK_PREFAB_FOR_EYETRACKING_PATH);
+                var originalbBodyPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(noBlinkSetterFolderPath + NOBLINK_PREFAB_FOR_EYETRACKING_PATH);
                 var bodyPrefab = PrefabUtility.InstantiatePrefab(originalbBodyPrefab) as GameObject;
                 bodyPrefab.transform.SetParent(objNoBlink.transform);
                 bodyPrefab.transform.localPosition = Vector3.zero;
@@ -309,10 +315,10 @@ namespace VRCDeveloperTool
         /// </summary>
         /// <param name="fileName"></param>
         /// <returns></returns>
-        private AnimatorController CreateNoBlinkAnimatorController(string fileName)
+        private AnimatorController CreateNoBlinkAnimatorController(string fileName, string folderPath)
         {
-            var new_assetsPath = AssetDatabase.GenerateUniqueAssetPath(SAVE_FOLDER_PATH + fileName + ".controller");
-            AssetDatabase.CopyAsset(NOBLINK_ANIMATOR_PATH, new_assetsPath);
+            var new_assetsPath = AssetDatabase.GenerateUniqueAssetPath(noBlinkSetterFolderPath + SAVE_FOLDER_PATH + fileName + ".controller");
+            AssetDatabase.CopyAsset(folderPath + NOBLINK_ANIMATOR_PATH, new_assetsPath);
             var noBlinkAnimatorController_new = AssetDatabase.LoadAssetAtPath<AnimatorController>(new_assetsPath);
 
             return noBlinkAnimatorController_new;
@@ -323,10 +329,10 @@ namespace VRCDeveloperTool
         /// </summary>
         /// <param name="fileName"></param>
         /// <returns></returns>
-        private AnimationClip CreateNoBlinkAnimationClip(string fileName)
+        private AnimationClip CreateNoBlinkAnimationClip(string fileName, string folderPath)
         {
-            var new_assetsPath = AssetDatabase.GenerateUniqueAssetPath(SAVE_FOLDER_PATH + fileName + ".anim");
-            AssetDatabase.CopyAsset(NOBLINK_ANIMATION_PATH, new_assetsPath);
+            var new_assetsPath = AssetDatabase.GenerateUniqueAssetPath(noBlinkSetterFolderPath + SAVE_FOLDER_PATH + fileName + ".anim");
+            AssetDatabase.CopyAsset(folderPath + NOBLINK_ANIMATION_PATH, new_assetsPath);
 
             var noBlinkAnim_new = AssetDatabase.LoadAssetAtPath<AnimationClip>(new_assetsPath);
 
@@ -451,7 +457,7 @@ namespace VRCDeveloperTool
                 if (containForBlendShape)
                 {
                     // ファイルを複製
-                    AssetDatabase.CreateAsset(animClip, AssetDatabase.GenerateUniqueAssetPath(SAVE_FOLDER_PATH + fileName + ".anim"));
+                    AssetDatabase.CreateAsset(animClip, AssetDatabase.GenerateUniqueAssetPath(noBlinkSetterFolderPath + SAVE_FOLDER_PATH + fileName + ".anim"));
                     AssetDatabase.SaveAssets();
                     AssetDatabase.Refresh();
 
@@ -487,6 +493,17 @@ namespace VRCDeveloperTool
         private bool CheckSettingNoBlink(GameObject obj)
         {
             return ((obj.transform).Find(NO_BLINK_ANIMATOR_OBJ_NAME) != null);
+        }
+
+        /// <summary>
+        /// フォルダ名からフォルダパスを取得する
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        private string GetFolderPathFromName(string folderName)
+        {
+            var guid = AssetDatabase.FindAssets(folderName + " t:Folder").FirstOrDefault();
+            return AssetDatabase.GUIDToAssetPath(guid);
         }
     }
 
