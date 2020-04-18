@@ -22,7 +22,7 @@ namespace VRCDeveloperTool
         private SkinnedMeshRenderer m_face = null;
         private AnimatorController blinkController = null;
         private AnimationClip blinkAnimClip = null;
-        private bool hasEyeTracking = false;
+        private bool hasVRCEyeTracking = false;
 
         private bool useAfkSystem = false;
 
@@ -199,7 +199,7 @@ namespace VRCDeveloperTool
 
                 EditorGUILayout.Space();
 
-                hasEyeTracking = EditorGUILayout.ToggleLeft("EyeTracking対応アバター", hasEyeTracking);
+                hasVRCEyeTracking = EditorGUILayout.ToggleLeft("EyeTracking対応アバター", hasVRCEyeTracking);
 
                 useAfkSystem = EditorGUILayout.ToggleLeft("AFK機構を使う", useAfkSystem);
 
@@ -303,7 +303,7 @@ namespace VRCDeveloperTool
             ChangeAndSetAnimationKeysPathForFaceAnimations(ref standingAnimController, faceMesh.gameObject, noBlinkAnimatorObj, blinkAnimator.gameObject);
 
             // アイトラするようにする
-            if (hasEyeTracking)
+            if (hasVRCEyeTracking)
             {
                 var originalbBodyPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(noBlinkSetterFolderPath + NOBLINK_PREFAB_FOR_EYETRACKING_PATH);
                 var bodyPrefab = PrefabUtility.InstantiatePrefab(originalbBodyPrefab) as GameObject;
@@ -370,6 +370,8 @@ namespace VRCDeveloperTool
 
             standingAnimController = avatar.CustomStandingAnims;
             sittingAnimController = avatar.CustomSittingAnims;
+
+            hasVRCEyeTracking = IsVRCEyeTrackingAvatar(avatar);
 
             saveFolderPath = Path.GetDirectoryName(AssetDatabase.GetAssetPath(avatar.CustomStandingAnims));
             Debug.Log(saveFolderPath);
@@ -660,6 +662,54 @@ namespace VRCDeveloperTool
             serializedObj.ApplyModifiedProperties();
 
             return afkAnim;
+        }
+
+        /// <summary>
+        /// VRChatのアイトラッキングに対応したアバターか判断する
+        /// </summary>
+        /// <param name="avatar"></param>
+        /// <returns></returns>
+        private bool IsVRCEyeTrackingAvatar(VRC_AvatarDescriptor avatar)
+        {
+            // アイトラッキングの条件
+            // 参考:https://jellyfish-qrage.hatenablog.com/entry/2018/07/25/034610
+            // - ボーンが「Armature/Hips/Spine/Chest/Neck/Head」という階層である
+            // - Headボーンの下に「LeftEye, RightEye」というオブジェクト（ボーン）がある
+            // - アバター直下にBodyというオブジェクトがある
+            // * Bodyの上から4つのシェイプキーがまばたきに使われる
+
+            var avatarAnimator = avatar.gameObject.GetComponent<Animator>();
+            if (avatarAnimator == null) return false;
+            var headTrans = avatarAnimator.GetBoneTransform(HumanBodyBones.Head);
+            if (headTrans == null) return false;
+
+            var headPath = GetHierarchyPath(headTrans);
+            if (!headPath.EndsWith("Armature/Hips/Spine/Chest/Neck/Head")) return false;
+
+            if (headTrans.Find("LeftEye") == null || headTrans.Find("RightEye") == null) return false;
+
+            var avatarTrans = avatar.gameObject.transform;
+            if (avatarTrans.Find("Body") == null) return false;
+
+            return true;
+        }
+
+        /// <summary>
+        /// targetの階層を取得する
+        /// </summary>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        private string GetHierarchyPath(Transform target)
+        {
+            string path = target.name;
+            while(true)
+            {
+                target = target.parent;
+                if (target == null) break;
+                path = target.name + "/" + path;
+            }
+
+            return path;
         }
     }
 
