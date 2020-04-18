@@ -20,6 +20,8 @@ namespace VRCDeveloperTool
         private AnimatorOverrideController standingAnimController = null;
         private AnimatorOverrideController sittingAnimController = null;
         private SkinnedMeshRenderer m_face = null;
+        private string[] blendShapeNames = null;
+        private int blinkBlendShapeIndex = -1;
         private Animator blinkAnimator = null;
         private AnimatorController blinkController = null;
         private AnimationClip blinkAnimClip = null;
@@ -129,6 +131,11 @@ namespace VRCDeveloperTool
                 if (EditorGUI.EndChangeCheck())
                 {
                     m_face = m_avatar.VisemeSkinnedMesh;
+                }
+
+                if (blinkBlendShapeIndex > 0 && blendShapeNames != null)
+                {
+                    blinkBlendShapeIndex = EditorGUILayout.Popup("Blink BlendShape", blinkBlendShapeIndex, blendShapeNames);
                 }
 
                 // まばたき用AnimatorController
@@ -355,14 +362,40 @@ namespace VRCDeveloperTool
 
             m_face = avatar.VisemeSkinnedMesh;
 
-            blinkAnimator = GetBlinkAnimator(avatar.gameObject);
-            if (blinkAnimator != null)
+            if (m_face != null)
             {
-                blinkController = blinkAnimator.runtimeAnimatorController as AnimatorController;
-            }
-            if (blinkController != null)
-            {
-                blinkAnimClip = blinkController.layers[0].stateMachine.states[0].state.motion as AnimationClip;
+                // まばたきアニメーションを取得
+                blinkAnimator = GetBlinkAnimator(m_face.gameObject);
+                if (blinkAnimator != null)
+                {
+                    blinkController = blinkAnimator.runtimeAnimatorController as AnimatorController;
+                }
+                if (blinkController != null)
+                {
+                    blinkAnimClip = blinkController.layers[0].stateMachine.states[0].state.motion as AnimationClip;
+                }
+
+                // まばたきシェイプキーを取得
+                string blinkBlendShapeName = string.Empty;
+                if (blinkAnimClip != null)
+                {
+                    blinkBlendShapeName = GetBlinkBlendShapeName(blinkAnimClip);
+                }
+
+                // BlendShapeの一覧を取得
+                var faceMesh = m_face.sharedMesh;
+                var blendShapeNameList = new List<string>();
+                for (int blendShapeIndex = 0; blendShapeIndex < faceMesh.blendShapeCount; blendShapeIndex++)
+                {
+                    var blendShapeName = faceMesh.GetBlendShapeName(blendShapeIndex);
+                    blendShapeNameList.Add(blendShapeName);
+
+                    if (blendShapeName.Equals(blinkBlendShapeName))
+                    {
+                        blinkBlendShapeIndex = blendShapeIndex;
+                    }
+                }
+                blendShapeNames = blendShapeNameList.ToArray();
             }
 
             standingAnimController = avatar.CustomStandingAnims;
@@ -689,6 +722,24 @@ namespace VRCDeveloperTool
             if (avatarTrans.Find("Body") == null) return false;
 
             return true;
+        }
+
+        /// <summary>
+        /// まばたき用のシェイプキー名を取得する
+        /// </summary>
+        /// <param name="blinkClip"></param>
+        /// <returns></returns>
+        private string GetBlinkBlendShapeName(AnimationClip blinkClip)
+        {
+            var bindings = AnimationUtility.GetCurveBindings(blinkAnimClip);
+
+            var blinkBlendShapeName = bindings
+                                        .Where(x => x.type == typeof(SkinnedMeshRenderer))
+                                        .Select(x => x.propertyName)
+                                        .FirstOrDefault()
+                                        .Replace("blendShape.", string.Empty);
+
+            return blinkBlendShapeName;
         }
     }
 
