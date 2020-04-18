@@ -84,6 +84,12 @@ namespace VRCDeveloperTool
 
             if (m_avatar != null)
             {
+                // EyeTracking
+                using (new EditorGUI.IndentLevelScope())
+                {
+                    EditorGUILayout.LabelField("EyeTracking" + (hasVRCEyeTracking ? "対応アバター" : "非対応アバター"));
+                }
+
                 // VRC_AvatarDescripterに設定してあるAnimator
                 EditorGUILayout.Space();
                 EditorGUILayout.LabelField("Custom Standing Anims", EditorStyles.boldLabel);
@@ -212,8 +218,6 @@ namespace VRCDeveloperTool
                 }
 
                 EditorGUILayout.Space();
-
-                hasVRCEyeTracking = EditorGUILayout.ToggleLeft("EyeTracking対応アバター", hasVRCEyeTracking);
 
                 useAfkSystem = EditorGUILayout.ToggleLeft("AFK機構を使う", useAfkSystem);
 
