@@ -154,6 +154,11 @@ namespace VRCDeveloperTool
                     true
                 ) as AnimationClip;
 
+                if (blinkController == null || blinkAnimClip == null)
+                {
+                    EditorGUILayout.HelpBox("まばたきアニメーションが設定されていません", MessageType.Error);
+                }
+
                 // CustomStandingAnimsが設定されていない時の例外処理
                 if (m_avatar != null && m_face == null)
                 {
@@ -228,7 +233,11 @@ namespace VRCDeveloperTool
             }
 
 
-            EditorGUI.BeginDisabledGroup(m_avatar == null || m_face == null);
+            EditorGUI.BeginDisabledGroup(
+                m_avatar == null || 
+                m_face == null || 
+                blinkController == null || 
+                blinkAnimClip == null);
             {
                 using (new EditorGUILayout.HorizontalScope())
                 {
@@ -370,6 +379,12 @@ namespace VRCDeveloperTool
                 {
                     blinkController = blinkAnimator.runtimeAnimatorController as AnimatorController;
                 }
+                else
+                {
+                    blinkController = null;
+                    blinkAnimClip = null;
+                }
+
                 if (blinkController != null)
                 {
                     blinkAnimClip = blinkController.layers[0].stateMachine.states[0].state.motion as AnimationClip;
