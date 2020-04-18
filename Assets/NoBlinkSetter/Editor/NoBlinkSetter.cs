@@ -20,6 +20,8 @@ namespace VRCDeveloperTool
         private AnimatorOverrideController standingAnimController = null;
         private AnimatorOverrideController sittingAnimController = null;
         private SkinnedMeshRenderer m_face = null;
+        private AnimatorController blinkController = null;
+        private AnimationClip blinkAnimClip = null;
         private bool hasEyeTracking = false;
 
         private bool useAfkSystem = false;
@@ -29,7 +31,6 @@ namespace VRCDeveloperTool
         private string noBlinkSetterFolderPath;
         private string saveFolderPath;
 
-        private AnimationClip blinkAnimClip = null;
         private int afkMinute = 3;
 
         private const string NOBLINK_ANIMATOR_PATH = "/OriginFiles/blink reset.controller";
@@ -129,6 +130,22 @@ namespace VRCDeveloperTool
                     m_face = m_avatar.VisemeSkinnedMesh;
                 }
 
+                // まばたき用AnimatorController
+                EditorGUILayout.Space();
+                blinkController = EditorGUILayout.ObjectField(
+                    "Blink AnimatorController",
+                    blinkController,
+                    typeof(AnimatorController),
+                    true
+                ) as AnimatorController;
+
+                blinkAnimClip = EditorGUILayout.ObjectField(
+                    "Blink AnimationClip", 
+                    blinkAnimClip, 
+                    typeof(AnimationClip), 
+                    true
+                ) as AnimationClip;
+
                 // CustomStandingAnimsが設定されていない時の例外処理
                 if (m_avatar != null && m_face == null)
                 {
@@ -187,8 +204,6 @@ namespace VRCDeveloperTool
                 useAfkSystem = EditorGUILayout.ToggleLeft("AFK機構を使う", useAfkSystem);
 
                 EditorGUILayout.Space();
-
-                blinkAnimClip = EditorGUILayout.ObjectField("Blink AnimationClip", blinkAnimClip, typeof(AnimationClip), true) as AnimationClip;
 
                 if (GUILayout.Button("Create Afk System Animation"))
                 {
@@ -342,6 +357,16 @@ namespace VRCDeveloperTool
             if (avatar == null) return;
 
             m_face = avatar.VisemeSkinnedMesh;
+
+            var blinkAnimator = m_face.GetComponent<Animator>();
+            if (blinkAnimator != null)
+            {
+                blinkController = blinkAnimator.runtimeAnimatorController as AnimatorController;
+            }
+            if (blinkController != null)
+            {
+                blinkAnimClip = blinkController.layers[0].stateMachine.states[0].state.motion as AnimationClip;
+            }
 
             standingAnimController = avatar.CustomStandingAnims;
             sittingAnimController = avatar.CustomSittingAnims;
