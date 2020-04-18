@@ -22,6 +22,8 @@ namespace VRCDeveloperTool
         private SkinnedMeshRenderer m_face = null;
         private bool hasEyeTracking = false;
 
+        private bool useAfkSystem = false;
+
         private bool isSettingNoBlink = false;
 
         private string noBlinkSetterFolderPath;
@@ -178,6 +180,8 @@ namespace VRCDeveloperTool
                 EditorGUILayout.Space();
 
                 hasEyeTracking = EditorGUILayout.ToggleLeft("EyeTracking対応アバター", hasEyeTracking);
+
+                useAfkSystem = EditorGUILayout.ToggleLeft("AFK機構を使う", useAfkSystem);
 
                 EditorGUILayout.Space();
 
