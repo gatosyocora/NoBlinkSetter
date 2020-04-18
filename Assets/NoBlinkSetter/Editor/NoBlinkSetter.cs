@@ -93,8 +93,8 @@ namespace VRCDeveloperTool
                 // VRC_AvatarDescripterに設定してあるAnimator
                 EditorGUILayout.Space();
                 EditorGUILayout.LabelField("Custom Standing Anims", EditorStyles.boldLabel);
+                using (new EditorGUI.IndentLevelScope())
                 {
-                    EditorGUI.indentLevel++;
                     EditorGUI.BeginChangeCheck();
                     {
                         standingAnimController = EditorGUILayout.ObjectField(
@@ -108,7 +108,6 @@ namespace VRCDeveloperTool
                     {
                         m_avatar.CustomStandingAnims = standingAnimController;
                     }
-                    EditorGUI.indentLevel--;
                 }
                 
                 if (m_avatar != null && !isSettingNoBlink)
@@ -119,67 +118,72 @@ namespace VRCDeveloperTool
                 // CustomStandingAnims未設定時の警告表示
                 if (m_avatar != null && standingAnimController == null)
                 {
-                    EditorGUILayout.HelpBox("VRC_AvatarDescripterにCustom Standing Animsを設定してください", MessageType.Warning);
+                    EditorGUILayout.HelpBox("VRC_AvatarDescripterにCustom Standing Animsを設定してください", MessageType.Error);
                 }
 
-
-                // VRC_AvatarDescriptorに設定してあるFaceMesh
                 EditorGUILayout.Space();
-                EditorGUI.BeginChangeCheck();
+
+                EditorGUILayout.LabelField("Blink", EditorStyles.boldLabel);
+                using (new EditorGUI.IndentLevelScope())
                 {
-                    m_avatar.VisemeSkinnedMesh = EditorGUILayout.ObjectField(
-                        "Face Mesh",
-                        m_avatar.VisemeSkinnedMesh,
-                        typeof(SkinnedMeshRenderer),
+                    // VRC_AvatarDescriptorに設定してあるFaceMesh
+                    EditorGUI.BeginChangeCheck();
+                    {
+                        m_avatar.VisemeSkinnedMesh = EditorGUILayout.ObjectField(
+                            "Face Mesh",
+                            m_avatar.VisemeSkinnedMesh,
+                            typeof(SkinnedMeshRenderer),
+                            true
+                        ) as SkinnedMeshRenderer;
+                    }
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        m_face = m_avatar.VisemeSkinnedMesh;
+                    }
+
+
+                    // FaceMesh未設定時の警告表示
+                    if (m_face == null)
+                    {
+                        EditorGUILayout.HelpBox("VRC_AvatarDescripterにFaceMeshを設定してください", MessageType.Error);
+                    }
+
+                    if (blinkBlendShapeIndex > 0 && blendShapeNames != null)
+                    {
+                        blinkBlendShapeIndex = EditorGUILayout.Popup("Blink BlendShape", blinkBlendShapeIndex, blendShapeNames);
+                    }
+
+                    // まばたき用AnimatorController
+                    EditorGUILayout.Space();
+                    blinkController = EditorGUILayout.ObjectField(
+                        "Blink AnimatorController",
+                        blinkController,
+                        typeof(AnimatorController),
                         true
-                    ) as SkinnedMeshRenderer;
-                }
-                if (EditorGUI.EndChangeCheck())
-                {
-                    m_face = m_avatar.VisemeSkinnedMesh;
+                    ) as AnimatorController;
+
+                    blinkAnimClip = EditorGUILayout.ObjectField(
+                        "Blink AnimationClip",
+                        blinkAnimClip,
+                        typeof(AnimationClip),
+                        true
+                    ) as AnimationClip;
+
+                    // まばたきアニメーション未設定時のエラー表示
+                    if (blinkController == null || blinkAnimClip == null)
+                    {
+                        EditorGUILayout.HelpBox("まばたきアニメーションが設定されていません", MessageType.Error);
+                    }
                 }
 
-                // FaceMesh未設定時の警告表示
-                if (m_face == null)
-                {
-                    EditorGUILayout.HelpBox("VRC_AvatarDescripterにFaceMeshを設定してください", MessageType.Warning);
-                }
-
-                if (blinkBlendShapeIndex > 0 && blendShapeNames != null)
-                {
-                    blinkBlendShapeIndex = EditorGUILayout.Popup("Blink BlendShape", blinkBlendShapeIndex, blendShapeNames);
-                }
-
-                // まばたき用AnimatorController
                 EditorGUILayout.Space();
-                blinkController = EditorGUILayout.ObjectField(
-                    "Blink AnimatorController",
-                    blinkController,
-                    typeof(AnimatorController),
-                    true
-                ) as AnimatorController;
-
-                blinkAnimClip = EditorGUILayout.ObjectField(
-                    "Blink AnimationClip", 
-                    blinkAnimClip, 
-                    typeof(AnimationClip), 
-                    true
-                ) as AnimationClip;
-
-                // まばたきアニメーション未設定時のエラー表示
-                if (blinkController == null || blinkAnimClip == null)
-                {
-                    EditorGUILayout.HelpBox("まばたきアニメーションが設定されていません", MessageType.Error);
-                }
 
                 // Standing AnimatorのEmoteに設定してあるAnimationファイル
                 if (standingAnimController != null)
                 {
-                    EditorGUILayout.Space();
                     EditorGUILayout.LabelField("AnimationClips(Standing Anims)", EditorStyles.boldLabel);
+                    using (new EditorGUI.IndentLevelScope())
                     {
-
-                        EditorGUI.indentLevel++;
                         for (int i = 0; i < FACE_ANIM_NAMES.Length; i++)
                         {
                             if (standingAnimController == null || m_avatar.CustomStandingAnims[FACE_ANIM_NAMES[i]].name == FACE_ANIM_NAMES[i])
@@ -201,7 +205,6 @@ namespace VRCDeveloperTool
                                 ) as AnimationClip;
                             }
                         }
-                        EditorGUI.indentLevel--;
                     }
                 }
 
