@@ -110,10 +110,10 @@ namespace VRCDeveloperTool
                 else if (m_avatar != null && isSettingNoBlink)
                     EditorGUILayout.HelpBox("AnimationClipsをNoBlinkに対応させます。", MessageType.Warning);
 
-                // CustomStandingAnimsが設定されていない時の例外処理
+                // CustomStandingAnims未設定時の警告表示
                 if (m_avatar != null && standingAnimController == null)
                 {
-                    EditorGUILayout.HelpBox("Set Custom Standing Anims in VRC_AvatarDescripter", MessageType.Warning);
+                    EditorGUILayout.HelpBox("VRC_AvatarDescripterにCustom Standing Animsを設定してください", MessageType.Warning);
                 }
 
 
@@ -131,6 +131,12 @@ namespace VRCDeveloperTool
                 if (EditorGUI.EndChangeCheck())
                 {
                     m_face = m_avatar.VisemeSkinnedMesh;
+                }
+
+                // FaceMesh未設定時の警告表示
+                if (m_face == null)
+                {
+                    EditorGUILayout.HelpBox("VRC_AvatarDescripterにFaceMeshを設定してください", MessageType.Warning);
                 }
 
                 if (blinkBlendShapeIndex > 0 && blendShapeNames != null)
@@ -154,15 +160,10 @@ namespace VRCDeveloperTool
                     true
                 ) as AnimationClip;
 
+                // まばたきアニメーション未設定時のエラー表示
                 if (blinkController == null || blinkAnimClip == null)
                 {
                     EditorGUILayout.HelpBox("まばたきアニメーションが設定されていません", MessageType.Error);
-                }
-
-                // CustomStandingAnimsが設定されていない時の例外処理
-                if (m_avatar != null && m_face == null)
-                {
-                    EditorGUILayout.HelpBox("Set Face Mesh in VRC_AvatarDescripter", MessageType.Warning);
                 }
 
                 // Standing AnimatorのEmoteに設定してあるAnimationファイル
