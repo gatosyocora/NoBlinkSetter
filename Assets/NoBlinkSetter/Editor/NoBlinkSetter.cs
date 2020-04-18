@@ -29,6 +29,9 @@ namespace VRCDeveloperTool
         private string noBlinkSetterFolderPath;
         private string saveFolderPath;
 
+        private AnimationClip blinkAnimClip = null;
+        private int afkMinute = 3;
+
         private const string NOBLINK_ANIMATOR_PATH = "/OriginFiles/blink reset.controller";
         private const string NOBLINK_ANIMATION_PATH = "/OriginFiles/blink reset.anim";
         private const string NOBLINK_PREFAB_FOR_EYETRACKING_PATH = "/OriginFiles/Body.prefab";
@@ -184,6 +187,20 @@ namespace VRCDeveloperTool
                 useAfkSystem = EditorGUILayout.ToggleLeft("AFK機構を使う", useAfkSystem);
 
                 EditorGUILayout.Space();
+
+                blinkAnimClip = EditorGUILayout.ObjectField("Blink AnimationClip", blinkAnimClip, typeof(AnimationClip), true) as AnimationClip;
+
+                if (GUILayout.Button("Create Afk System Animation"))
+                {
+                    var afkAnim = CreateAfkBlinkAnimation(blinkAnimClip, afkMinute * 60);
+
+                    if (afkAnim != null)
+                    {
+                        AssetDatabase.CreateAsset(afkAnim, "Assets/"+afkAnim.name + ".anim");
+                        AssetDatabase.SaveAssets();
+                        AssetDatabase.Refresh();
+                    }
+                }
 
             }
 
@@ -560,6 +577,64 @@ namespace VRCDeveloperTool
                 selectedFolderPath = "Assets";
             }
             return selectedFolderPath;
+        }
+
+        private AnimationClip CreateAfkBlinkAnimation(AnimationClip defaultBlinkAnim, float afkTriggerTime)
+        {
+            if (defaultBlinkAnim == null) return null;
+
+            var afkAnim = Instantiate(defaultBlinkAnim) as AnimationClip;
+
+            var frameRate = afkAnim.frameRate;
+
+            var bindings = AnimationUtility.GetCurveBindings(afkAnim);
+
+            foreach (var binding in bindings)
+            {
+                // もし表情アニメーションのbindingじゃなかったら
+                if (binding.type != typeof(SkinnedMeshRenderer)) continue;
+
+                var curve = AnimationUtility.GetEditorCurve(afkAnim, binding);
+
+                var timeOf1Set = curve.keys[curve.length - 1].time;
+                var keyCountOf1Set = curve.length;
+
+                int loopCount = 1;
+                bool isFinished = false;
+                while (loopCount < 10)
+                {
+                    for (int keyIndex = 0; keyIndex < keyCountOf1Set; keyIndex++)
+                    {
+                        var key = curve.keys[keyIndex];
+                        var time = key.time + timeOf1Set * loopCount;
+
+                        if (time >= afkTriggerTime)
+                        {
+                            isFinished = true;
+                            break;
+                        }
+
+                        curve.AddKey(time, key.value);
+                    }
+
+                    if (isFinished) break;
+
+                    loopCount++;
+                }
+
+                // 最後のフレームの1f後に目を閉じるキーを入れる
+                var lastKeyTime = curve.keys[curve.length - 1].time;
+                curve.AddKey(lastKeyTime + 1/frameRate, 100f);
+
+                AnimationUtility.SetEditorCurve(afkAnim, binding, curve);
+            }
+
+            // LoopTimeをfalseにする
+            var serializedObj = new SerializedObject(afkAnim);
+            serializedObj.FindProperty("m_AnimationClipSetting.m_LoopTime").boolValue = false;
+            serializedObj.ApplyModifiedProperties();
+
+            return afkAnim;
         }
     }
 
