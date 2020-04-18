@@ -20,6 +20,7 @@ namespace VRCDeveloperTool
         private AnimatorOverrideController standingAnimController = null;
         private AnimatorOverrideController sittingAnimController = null;
         private SkinnedMeshRenderer m_face = null;
+        private Animator blinkAnimator = null;
         private AnimatorController blinkController = null;
         private AnimationClip blinkAnimClip = null;
         private bool hasVRCEyeTracking = false;
@@ -226,7 +227,7 @@ namespace VRCDeveloperTool
                 {
                     if (GUILayout.Button("Set NoBlink"))
                     {
-                        SetNoBlink(m_avatar.gameObject);
+                        SetNoBlink(m_avatar.gameObject, blinkAnimator);
                     }
                 }
             }
@@ -237,11 +238,10 @@ namespace VRCDeveloperTool
         /// まばたき防止の設定をする
         /// </summary>
         /// <param name="obj"></param>
-        private void SetNoBlink(GameObject obj)
+        private void SetNoBlink(GameObject obj, Animator blinkAnimator)
         {
             GameObject objNoBlink;
             SkinnedMeshRenderer faceMesh;
-            Animator blinkAnimator;
             // まばたき防止ギミックが設定されていなければ設定する
             GameObject noBlinkAnimatorObj = null;
             var noBlinkAnimatorObjTrans = (obj.transform).Find(NO_BLINK_ANIMATOR_OBJ_NAME);
@@ -252,8 +252,6 @@ namespace VRCDeveloperTool
                 obj.SetActive(false);
 
                 faceMesh = objNoBlink.GetComponent<VRC_AvatarDescriptor>().VisemeSkinnedMesh;
-
-                blinkAnimator = GetBlinkAnimator(faceMesh.gameObject);
 
                 if (blinkAnimator == null) return;
 
@@ -296,7 +294,6 @@ namespace VRCDeveloperTool
                 objNoBlink = obj;
                 noBlinkAnimatorObj = noBlinkAnimatorObjTrans.gameObject;
                 faceMesh = m_face;
-                blinkAnimator = GetBlinkAnimator(faceMesh.gameObject);
             }
 
             // アニメーションオーバーライド用のAnimationClipを新しいパスに設定しなおす
@@ -358,7 +355,7 @@ namespace VRCDeveloperTool
 
             m_face = avatar.VisemeSkinnedMesh;
 
-            var blinkAnimator = m_face.GetComponent<Animator>();
+            blinkAnimator = GetBlinkAnimator(avatar.gameObject);
             if (blinkAnimator != null)
             {
                 blinkController = blinkAnimator.runtimeAnimatorController as AnimatorController;
