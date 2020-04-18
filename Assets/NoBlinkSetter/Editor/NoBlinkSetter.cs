@@ -150,20 +150,20 @@ namespace VRCDeveloperTool
 
                     if (blinkBlendShapeIndex > 0 && blendShapeNames != null)
                     {
-                        blinkBlendShapeIndex = EditorGUILayout.Popup("Blink BlendShape", blinkBlendShapeIndex, blendShapeNames);
+                        blinkBlendShapeIndex = EditorGUILayout.Popup("BlendShape", blinkBlendShapeIndex, blendShapeNames);
                     }
 
                     // まばたき用AnimatorController
                     EditorGUILayout.Space();
                     blinkController = EditorGUILayout.ObjectField(
-                        "Blink AnimatorController",
+                        "AnimatorController",
                         blinkController,
                         typeof(AnimatorController),
                         true
                     ) as AnimatorController;
 
                     blinkAnimClip = EditorGUILayout.ObjectField(
-                        "Blink AnimationClip",
+                        "AnimationClip",
                         blinkAnimClip,
                         typeof(AnimationClip),
                         true
