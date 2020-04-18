@@ -680,7 +680,7 @@ namespace VRCDeveloperTool
             var headTrans = avatarAnimator.GetBoneTransform(HumanBodyBones.Head);
             if (headTrans == null) return false;
 
-            var headPath = GetHierarchyPath(headTrans);
+            var headPath = GetHierarchyPath(headTrans.gameObject);
             if (!headPath.EndsWith("Armature/Hips/Spine/Chest/Neck/Head")) return false;
 
             if (headTrans.Find("LeftEye") == null || headTrans.Find("RightEye") == null) return false;
@@ -689,24 +689,6 @@ namespace VRCDeveloperTool
             if (avatarTrans.Find("Body") == null) return false;
 
             return true;
-        }
-
-        /// <summary>
-        /// targetの階層を取得する
-        /// </summary>
-        /// <param name="target"></param>
-        /// <returns></returns>
-        private string GetHierarchyPath(Transform target)
-        {
-            string path = target.name;
-            while(true)
-            {
-                target = target.parent;
-                if (target == null) break;
-                path = target.name + "/" + path;
-            }
-
-            return path;
         }
     }
 
