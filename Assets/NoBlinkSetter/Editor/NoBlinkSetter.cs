@@ -352,8 +352,8 @@ namespace VRCDeveloperTool
         private GameObject DuplicationAvatarGameObject(GameObject origObj)
         {
             var newObj = Object.Instantiate<GameObject>(origObj);
-            newObj.transform.position = newObj.transform.position;
-            newObj.transform.rotation = newObj.transform.rotation;
+            newObj.transform.position = origObj.transform.position;
+            newObj.transform.rotation = origObj.transform.rotation;
 
             return newObj;
         }
