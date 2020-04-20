@@ -22,6 +22,7 @@ namespace VRCDeveloperTool
         private SkinnedMeshRenderer m_face = null;
         private string[] blendShapeNames = null;
         private List<int> blinkBlendShapeIndices = null;
+        private string[] blinkBlendShapeNames = null;
         private Animator blinkAnimator = null;
         private AnimatorController blinkController = null;
         private AnimationClip blinkAnimClip = null;
@@ -151,11 +152,11 @@ namespace VRCDeveloperTool
                     EditorGUILayout.LabelField("BlendShape");
                     using (new EditorGUI.IndentLevelScope())
                     {
-                        if (blinkBlendShapeIndices != null && blinkBlendShapeIndices.Count > 0 && blendShapeNames != null)
+                        if (blinkBlendShapeNames != null)
                         {
-                            foreach (var blinkBlendShapeIndex in blinkBlendShapeIndices)
+                            foreach (var blinkBlendShapeName in blinkBlendShapeNames)
                             {
-                                EditorGUILayout.LabelField(blendShapeNames[blinkBlendShapeIndex]);
+                                EditorGUILayout.LabelField(blinkBlendShapeName);
                             }
                         }
                         else
