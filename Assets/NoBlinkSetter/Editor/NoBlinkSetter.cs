@@ -571,17 +571,18 @@ namespace VRCDeveloperTool
                         containForBlendShape = true;
                         continue;
                     }
+                    // まばたきシェイプキーを操作するものであれば削除
+                    else if (binding.type == typeof(SkinnedMeshRenderer) &&
+                            blinkBlendShapeNames.Contains(binding.propertyName.Replace("blendShape.", string.Empty)))
+                    {
+                        AnimationUtility.SetEditorCurve(animClip, binding, null);
+                        continue;
+                    }
                     // targetObjを操作するBindingであればパスを変更
                     else if (animTargetObjName.Equals(targetObj.name))
                     {
                         m_binding.path = new_path;
                         containForBlendShape = true;
-                    }
-                    // まばたきシェイプキーを操作するものであれば削除
-                    else if (blinkBlendShapeNames.Contains(binding.propertyName.Replace("blendShape.", string.Empty)))
-                    {
-                        AnimationUtility.SetEditorCurve(animClip, binding, null);
-                        continue;
                     }
                     // すでにまばたき防止Animator用のキーがあれば削除
                     else if (animTargetObjName.Equals(NO_BLINK_ANIMATOR_OBJ_NAME))
