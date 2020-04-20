@@ -604,7 +604,7 @@ namespace VRCDeveloperTool
                 if (containForBlendShape)
                 {
                     // ファイルを複製
-                    AssetDatabase.CreateAsset(animClip, AssetDatabase.GenerateUniqueAssetPath(saveFolderPath + fileName + ".anim"));
+                    AssetDatabase.CreateAsset(animClip, AssetDatabase.GenerateUniqueAssetPath(saveFolderPath + "/" +fileName + ".anim"));
                     AssetDatabase.SaveAssets();
                     AssetDatabase.Refresh();
 
