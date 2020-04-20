@@ -310,8 +310,9 @@ namespace VRCDeveloperTool
                 while (currentTrans.parent != null && currentTrans.parent != objNoBlink.transform)
                 {
                     currentTrans = currentTrans.parent;
-                currentTrans.parent = noBlinkAnimatorObj.transform;
-                noBlinkAnimatorObj.transform.parent = objNoBlink.transform;
+                }
+                noBlinkAnimatorObj.transform.SetParent(objNoBlink.transform);
+                currentTrans.SetParent(noBlinkAnimatorObj.transform);
 
                 // まばたき防止Animationを設定
                 var noBlinkAnim = CreateNoBlinkAnimationClip(objNoBlink.name, noBlinkSetterFolderPath);
