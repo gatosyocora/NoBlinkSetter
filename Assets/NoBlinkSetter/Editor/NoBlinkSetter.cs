@@ -306,7 +306,9 @@ namespace VRCDeveloperTool
 
                 // blinkAnimatorから遡ってAvatarの子にまばたき防止Animator付きオブジェクトを設定
                 Transform currentTrans = blinkAnimator.gameObject.transform;
-                while (currentTrans.parent != objNoBlink.transform)
+
+                while (currentTrans.parent != null && currentTrans.parent != objNoBlink.transform)
+                {
                     currentTrans = currentTrans.parent;
                 currentTrans.parent = noBlinkAnimatorObj.transform;
                 noBlinkAnimatorObj.transform.parent = objNoBlink.transform;
