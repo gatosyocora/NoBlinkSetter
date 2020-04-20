@@ -21,7 +21,7 @@ namespace VRCDeveloperTool
         private AnimatorOverrideController sittingAnimController = null;
         private SkinnedMeshRenderer m_face = null;
         private string[] blendShapeNames = null;
-        private int blinkBlendShapeIndex = -1;
+        private List<int> blinkBlendShapeIndices = null;
         private Animator blinkAnimator = null;
         private AnimatorController blinkController = null;
         private AnimationClip blinkAnimClip = null;
@@ -148,9 +148,21 @@ namespace VRCDeveloperTool
                         EditorGUILayout.HelpBox("VRC_AvatarDescripterにFaceMeshを設定してください", MessageType.Error);
                     }
 
-                    if (blinkBlendShapeIndex > 0 && blendShapeNames != null)
+                    EditorGUILayout.LabelField("BlendShape");
+                    using (new EditorGUI.IndentLevelScope())
                     {
-                        blinkBlendShapeIndex = EditorGUILayout.Popup("BlendShape", blinkBlendShapeIndex, blendShapeNames);
+                        if (blinkBlendShapeIndices != null && blinkBlendShapeIndices.Count > 0 && blendShapeNames != null)
+                        {
+                            foreach (var blinkBlendShapeIndex in blinkBlendShapeIndices)
+                            {
+                                EditorGUILayout.LabelField(blendShapeNames[blinkBlendShapeIndex]);
+                            }
+                        }
+                        else
+                        {
+                            EditorGUILayout.LabelField("まばたき用BlendShapeが見つかりませんでした");
+                            //blinkBlendShapeIndex = EditorGUILayout.Popup("BlendShape", blinkBlendShapeIndex, blendShapeNames);
+                        }
                     }
 
                     // まばたき用AnimatorController
@@ -399,23 +411,24 @@ namespace VRCDeveloperTool
                 }
 
                 // まばたきシェイプキーを取得
-                string blinkBlendShapeName = string.Empty;
+                string[] blinkBlendShapeNames = null;
                 if (blinkAnimClip != null)
                 {
-                    blinkBlendShapeName = GetBlinkBlendShapeName(blinkAnimClip);
+                    blinkBlendShapeNames = GetBlinkBlendShapeNames(blinkAnimClip, m_face);
                 }
 
                 // BlendShapeの一覧を取得
                 var faceMesh = m_face.sharedMesh;
                 var blendShapeNameList = new List<string>();
+                blinkBlendShapeIndices = new List<int>();
                 for (int blendShapeIndex = 0; blendShapeIndex < faceMesh.blendShapeCount; blendShapeIndex++)
                 {
                     var blendShapeName = faceMesh.GetBlendShapeName(blendShapeIndex);
                     blendShapeNameList.Add(blendShapeName);
 
-                    if (blendShapeName.Equals(blinkBlendShapeName))
+                    if (blinkBlendShapeNames.Contains(blendShapeName))
                     {
-                        blinkBlendShapeIndex = blendShapeIndex;
+                        blinkBlendShapeIndices.Add(blendShapeIndex);
                     }
                 }
                 blendShapeNames = blendShapeNameList.ToArray();
@@ -752,17 +765,16 @@ namespace VRCDeveloperTool
         /// </summary>
         /// <param name="blinkClip"></param>
         /// <returns></returns>
-        private string GetBlinkBlendShapeName(AnimationClip blinkClip)
+        private string[] GetBlinkBlendShapeNames(AnimationClip blinkAnimClip, SkinnedMeshRenderer faceRenderer)
         {
             var bindings = AnimationUtility.GetCurveBindings(blinkAnimClip);
 
-            var blinkBlendShapeName = bindings
+            var blinkBlendShapeNames = bindings
                                         .Where(x => x.type == typeof(SkinnedMeshRenderer))
-                                        .Select(x => x.propertyName)
-                                        .FirstOrDefault()
-                                        .Replace("blendShape.", string.Empty);
+                                        .Select(x => x.propertyName.Replace("blendShape.", string.Empty))
+                                        .ToArray();
 
-            return blinkBlendShapeName;
+            return blinkBlendShapeNames;
         }
     }
 
