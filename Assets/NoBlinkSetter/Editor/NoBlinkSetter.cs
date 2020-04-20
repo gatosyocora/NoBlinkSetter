@@ -368,22 +368,21 @@ namespace VRCDeveloperTool
         /// <returns></returns>
         private Animator GetBlinkAnimator(GameObject faceObj)
         {
-            var currentObj = faceObj;
+            var currentTrans = faceObj.transform;
             Animator blinkAnimator = null;
 
-            while (currentObj.transform.parent != null)
+            while (currentTrans.parent != null)
             {
-                blinkAnimator = currentObj.GetComponent<Animator>();
+                blinkAnimator = currentTrans.gameObject.GetComponent<Animator>();
 
                 // 見つかったら返す (whileの条件によってルートオブジェクトは検索しない)
-                if (blinkAnimator != null)
-                    return blinkAnimator;
+                if (blinkAnimator != null) break;
 
                 // 一つ上の親へ行く
-                currentObj = currentObj.transform.parent.gameObject;
+                currentTrans = currentTrans.parent;
             }
 
-            return null;
+            return blinkAnimator;
         }
 
 
