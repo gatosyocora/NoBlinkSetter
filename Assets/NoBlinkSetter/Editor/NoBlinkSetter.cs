@@ -415,7 +415,7 @@ namespace VRCDeveloperTool
                 string[] blinkBlendShapeNames = null;
                 if (blinkAnimClip != null)
                 {
-                    blinkBlendShapeNames = GetBlinkBlendShapeNames(blinkAnimClip, m_face);
+                    blinkBlendShapeNames = GetBlinkBlendShapeNames(blinkAnimClip);
                 }
 
                 // BlendShapeの一覧を取得
@@ -766,7 +766,7 @@ namespace VRCDeveloperTool
         /// </summary>
         /// <param name="blinkClip"></param>
         /// <returns></returns>
-        private string[] GetBlinkBlendShapeNames(AnimationClip blinkAnimClip, SkinnedMeshRenderer faceRenderer)
+        private string[] GetBlinkBlendShapeNames(AnimationClip blinkAnimClip)
         {
             var bindings = AnimationUtility.GetCurveBindings(blinkAnimClip);
 
