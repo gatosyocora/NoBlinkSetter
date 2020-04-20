@@ -334,6 +334,7 @@ namespace VRCDeveloperTool
             }
 
             // アニメーションオーバーライド用のAnimationClipを新しいパスに設定しなおす
+            // まばたきシェイプキーを使用しているキーを削除する
             ChangeAndSetAnimationKeysPathForFaceAnimations(ref standingAnimController, faceMesh.gameObject, noBlinkAnimatorObj, blinkAnimator.gameObject);
 
             // アイトラするようにする
@@ -412,7 +413,6 @@ namespace VRCDeveloperTool
                 }
 
                 // まばたきシェイプキーを取得
-                string[] blinkBlendShapeNames = null;
                 if (blinkAnimClip != null)
                 {
                     blinkBlendShapeNames = GetBlinkBlendShapeNames(blinkAnimClip);
@@ -426,11 +426,6 @@ namespace VRCDeveloperTool
                 {
                     var blendShapeName = faceMesh.GetBlendShapeName(blendShapeIndex);
                     blendShapeNameList.Add(blendShapeName);
-
-                    if (blinkBlendShapeNames.Contains(blendShapeName))
-                    {
-                        blinkBlendShapeIndices.Add(blendShapeIndex);
-                    }
                 }
                 blendShapeNames = blendShapeNameList.ToArray();
             }
@@ -522,7 +517,7 @@ namespace VRCDeveloperTool
         }
 
         /// <summary>
-        /// 設定されている表情用のAnimationClipのパスを変更し, まばたき防止用のパスを追加する
+        /// 設定されている表情用のAnimationClipのパスを変更し, まばたき防止用のパスを追加する。まばたきシェイプキーを削除する
         /// </summary>
         /// <param name="controller"></param>
         /// <param name="targetObj"></param>
@@ -578,6 +573,12 @@ namespace VRCDeveloperTool
                     {
                         m_binding.path = new_path;
                         containForBlendShape = true;
+                    }
+                    // まばたきシェイプキーを操作するものであれば削除
+                    else if (blinkBlendShapeNames.Contains(binding.propertyName.Replace("blendShape.", string.Empty)))
+                    {
+                        AnimationUtility.SetEditorCurve(animClip, binding, null);
+                        continue;
                     }
                     // すでにまばたき防止Animator用のキーがあれば削除
                     else if (animTargetObjName.Equals(NO_BLINK_ANIMATOR_OBJ_NAME))
