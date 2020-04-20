@@ -290,6 +290,7 @@ namespace VRCDeveloperTool
 
                 faceMesh = objNoBlink.GetComponent<VRC_AvatarDescriptor>().VisemeSkinnedMesh;
 
+                blinkAnimator = GetBlinkAnimator(faceMesh.gameObject);
                 if (blinkAnimator == null) return;
 
                 // まばたき防止Animatorを設定する空オブジェクトを生成
