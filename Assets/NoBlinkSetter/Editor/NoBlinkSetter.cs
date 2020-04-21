@@ -32,6 +32,8 @@ namespace VRCDeveloperTool
 
         private bool isSettingNoBlink = false;
 
+        private bool duplicateAvatarAnimatorController = true;
+
         private string noBlinkSetterFolderPath;
         private string saveFolderPath;
 
@@ -109,6 +111,8 @@ namespace VRCDeveloperTool
                     {
                         m_avatar.CustomStandingAnims = standingAnimController;
                     }
+
+                    duplicateAvatarAnimatorController = EditorGUILayout.ToggleLeft("Standing Animsに設定されたAnimatorControllerを複製する", duplicateAvatarAnimatorController);
                 }
                 
                 if (m_avatar != null && !isSettingNoBlink)
