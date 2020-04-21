@@ -344,6 +344,15 @@ namespace VRCDeveloperTool
                 faceMesh = m_face;
             }
 
+            // まばたきアニメーションを最適化する
+            var newBlinkAnimClip = CheckAndChangeBlinkAnimation(blinkAnimClip);
+
+            if (newBlinkAnimClip != null)
+            {
+                blinkAnimClip = newBlinkAnimClip;
+                blinkController.layers[0].stateMachine.states[0].state.motion = blinkAnimClip;
+            }
+
             if (duplicateAvatarAnimatorController)
             {
                 var animController = DuplicateAnimatorOverrideController(standingAnimController);
@@ -828,6 +837,86 @@ namespace VRCDeveloperTool
             var newController = AssetDatabase.LoadAssetAtPath(newPath, typeof(AnimatorOverrideController)) as AnimatorOverrideController;
 
             return newController;
+        }
+
+        /// <summary>
+        /// AnimationClipを複製する
+        /// </summary>
+        /// <param name="animClip"></param>
+        /// <returns></returns>
+        private AnimationClip DuplicateAnimationClip(AnimationClip animClip, string fileName, string saveFolderPath)
+        {
+            var originPath = AssetDatabase.GetAssetPath(animClip);
+            var ext = Path.GetExtension(originPath);
+            var newPath = AssetDatabase.GenerateUniqueAssetPath(saveFolderPath + "/" + fileName + ext);
+            AssetDatabase.CopyAsset(originPath, newPath);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
+            var newAnimClip = AssetDatabase.LoadAssetAtPath(newPath, typeof(AnimationClip)) as AnimationClip;
+            return newAnimClip;
+        }
+
+        /// <summary>
+        /// まばたきアニメーションが最適か調べて必要であれば設定する
+        /// </summary>
+        private AnimationClip CheckAndChangeBlinkAnimation(AnimationClip blinkAnimClip)
+        {
+            var blinkBindings = AnimationUtility.GetCurveBindings(blinkAnimClip)
+                                    .Where(x => x.type == typeof(SkinnedMeshRenderer));
+
+            // 3秒以内にまばたき用のアニメーションキーがあるか調べる
+            bool needShiftAnimationKeys = false;
+            float shiftStartTime = 0f;
+            foreach (var binding in blinkBindings)
+            {
+                var curve = AnimationUtility.GetEditorCurve(blinkAnimClip, binding);
+                var keys = curve.keys;
+
+                for (int i = 0; i < keys.Length; i++)
+                {
+                    if (keys[i].time < 3f && keys[i].value > 0f)
+                    {
+                        needShiftAnimationKeys = true;
+                        shiftStartTime = keys[i].time;
+                        break;
+                    }
+
+                    if (keys[i].time >= 3f) break;
+                }
+
+                if (needShiftAnimationKeys) break;
+            }
+
+            if (needShiftAnimationKeys)
+            {
+                var fileName = blinkAnimClip.name + NOBLINK_ASSET_NAME;
+                var newBlinkAnimClip = DuplicateAnimationClip(blinkAnimClip, fileName, saveFolderPath);
+
+                blinkBindings = AnimationUtility.GetCurveBindings(newBlinkAnimClip)
+                                    .Where(x => x.type == typeof(SkinnedMeshRenderer));
+
+                foreach (var binding in blinkBindings)
+                {
+                    var curve = AnimationUtility.GetEditorCurve(newBlinkAnimClip, binding);
+                    var newKeys = curve.keys;
+
+                    for (int i = 0; i < newKeys.Length; i++)
+                    {
+                        if (newKeys[i].time < shiftStartTime) continue;
+
+                        newKeys[i].time += (3f - shiftStartTime);
+                    }
+
+                    AnimationUtility.SetEditorCurve(newBlinkAnimClip, binding, curve);
+                }
+
+                return newBlinkAnimClip;
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 
