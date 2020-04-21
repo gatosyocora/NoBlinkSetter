@@ -274,7 +274,15 @@ namespace VRCDeveloperTool
                 {
                     if (GUILayout.Button("Set NoBlink"))
                     {
-                        SetNoBlink(m_avatar.gameObject, blinkAnimator);
+                        var noBlinkAvatar = SetNoBlink(m_avatar.gameObject, blinkAnimator);
+
+                        if (noBlinkAvatar != null) {
+                            m_avatar = noBlinkAvatar;
+                            GetAvatarInfo(m_avatar);
+                            isSettingNoBlink = true;
+                            duplicateAvatarAnimatorController = false;
+                        }
+
                     }
                 }
             }
@@ -285,9 +293,10 @@ namespace VRCDeveloperTool
         /// まばたき防止の設定をする
         /// </summary>
         /// <param name="obj"></param>
-        private void SetNoBlink(GameObject obj, Animator blinkAnimator)
+        private VRC_AvatarDescriptor SetNoBlink(GameObject obj, Animator blinkAnimator)
         {
             GameObject objNoBlink;
+            VRC_AvatarDescriptor noBlinkAvatar = null;
             SkinnedMeshRenderer faceMesh;
             // まばたき防止ギミックが設定されていなければ設定する
             GameObject noBlinkAnimatorObj = null;
@@ -298,10 +307,11 @@ namespace VRCDeveloperTool
                 objNoBlink.name = obj.name + NOBLINK_ASSET_NAME;
                 obj.SetActive(false);
 
-                faceMesh = objNoBlink.GetComponent<VRC_AvatarDescriptor>().VisemeSkinnedMesh;
+                noBlinkAvatar = objNoBlink.GetComponent<VRC_AvatarDescriptor>();
+                faceMesh = noBlinkAvatar.VisemeSkinnedMesh;
 
                 blinkAnimator = GetBlinkAnimator(faceMesh.gameObject);
-                if (blinkAnimator == null) return;
+                if (blinkAnimator == null) return null;
 
                 // まばたき防止Animatorを設定する空オブジェクトを生成
                 noBlinkAnimatorObj = new GameObject(NO_BLINK_ANIMATOR_OBJ_NAME);
@@ -360,7 +370,7 @@ namespace VRCDeveloperTool
             {
                 var fileName = standingAnimController.name + NOBLINK_ASSET_NAME;
                 var animController = DuplicateAnimatorOverrideController(standingAnimController, fileName, saveFolderPath);
-                objNoBlink.GetComponent<VRC_AvatarDescriptor>().CustomStandingAnims = animController;
+                noBlinkAvatar.CustomStandingAnims = animController;
                 standingAnimController = animController;
             }
 
@@ -377,6 +387,8 @@ namespace VRCDeveloperTool
                 bodyPrefab.transform.localPosition = Vector3.zero;
                 bodyPrefab.transform.localRotation = Quaternion.identity;
             }
+
+            return noBlinkAvatar;
 
         }
 
