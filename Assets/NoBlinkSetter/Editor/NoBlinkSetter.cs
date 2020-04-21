@@ -84,6 +84,7 @@ namespace VRCDeveloperTool
                 {
                     GetAvatarInfo(m_avatar);
                     isSettingNoBlink = CheckSettingNoBlink(m_avatar.gameObject);
+                    duplicateAvatarAnimatorController = CheckNeedToDuplicateController(m_avatar);
                 }
             }
 
@@ -655,6 +656,19 @@ namespace VRCDeveloperTool
         private bool CheckSettingNoBlink(GameObject obj)
         {
             return ((obj.transform).Find(NO_BLINK_ANIMATOR_OBJ_NAME) != null);
+        }
+
+        /// <summary>
+        /// CustomStandingAnimsに設定されたAnimatorOverrideControllerの複製が必要か調べる
+        /// </summary>
+        /// <param name="avatar"></param>
+        /// <returns></returns>
+        private bool CheckNeedToDuplicateController(VRC_AvatarDescriptor avatar)
+        {
+            var controller = avatar.CustomStandingAnims;
+            // 設定されていないので複製不可
+            if (controller == null) return false;
+            return !controller.name.EndsWith(NOBLINK_ASSET_NAME);
         }
 
         /// <summary>
