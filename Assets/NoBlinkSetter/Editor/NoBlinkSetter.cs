@@ -94,7 +94,13 @@ namespace VRCDeveloperTool
                 using (new EditorGUI.IndentLevelScope())
                 {
                     EditorGUILayout.LabelField("EyeTracking" + (hasVRCEyeTracking ? "対応アバター" : "非対応アバター"));
+                    EditorGUILayout.LabelField("NoBlinkSetter" + (isSettingNoBlink ? "設定済みアバター" : "未設定アバター"));
                 }
+
+                if (m_avatar != null && !isSettingNoBlink)
+                    EditorGUILayout.HelpBox("Avatarを複製して設定します", MessageType.Info);
+                else if (m_avatar != null && isSettingNoBlink)
+                    EditorGUILayout.HelpBox("AnimationClipsをNoBlinkに対応させます。", MessageType.Warning);
 
                 // VRC_AvatarDescripterに設定してあるAnimator
                 EditorGUILayout.Space();
@@ -115,18 +121,45 @@ namespace VRCDeveloperTool
                         m_avatar.CustomStandingAnims = standingAnimController;
                     }
 
-                    duplicateAvatarAnimatorController = EditorGUILayout.ToggleLeft("Standing Animsに設定されたAnimatorControllerを複製する", duplicateAvatarAnimatorController);
+                    duplicateAvatarAnimatorController = EditorGUILayout.ToggleLeft("Standing Animsに設定されたAnimatorOverrideControllerを複製する", duplicateAvatarAnimatorController);
                 }
-                
-                if (m_avatar != null && !isSettingNoBlink)
-                    EditorGUILayout.HelpBox("Avatarを複製して設定します", MessageType.Info);
-                else if (m_avatar != null && isSettingNoBlink)
-                    EditorGUILayout.HelpBox("AnimationClipsをNoBlinkに対応させます。", MessageType.Warning);
 
                 // CustomStandingAnims未設定時の警告表示
                 if (m_avatar != null && standingAnimController == null)
                 {
                     EditorGUILayout.HelpBox("VRC_AvatarDescripterにCustom Standing Animsを設定してください", MessageType.Error);
+                }
+
+                EditorGUILayout.Space();
+
+                // Standing AnimatorのEmoteに設定してあるAnimationファイル
+                if (standingAnimController != null)
+                {
+                    EditorGUILayout.LabelField("AnimationClips(Standing Anims)", EditorStyles.boldLabel);
+                    using (new EditorGUI.IndentLevelScope())
+                    {
+                        for (int i = 0; i < FACE_ANIM_NAMES.Length; i++)
+                        {
+                            if (standingAnimController == null || m_avatar.CustomStandingAnims[FACE_ANIM_NAMES[i]].name == FACE_ANIM_NAMES[i])
+                            {
+                                m_avatar.CustomStandingAnims[FACE_ANIM_NAMES[i]] = EditorGUILayout.ObjectField(
+                                    FACE_ANIM_NAMES[i],
+                                    null,
+                                    typeof(AnimationClip),
+                                    true
+                                ) as AnimationClip;
+                            }
+                            else
+                            {
+                                m_avatar.CustomStandingAnims[FACE_ANIM_NAMES[i]] = EditorGUILayout.ObjectField(
+                                    FACE_ANIM_NAMES[i],
+                                    m_avatar.CustomStandingAnims[FACE_ANIM_NAMES[i]],
+                                    typeof(AnimationClip),
+                                    true
+                                ) as AnimationClip;
+                            }
+                        }
+                    }
                 }
 
                 EditorGUILayout.Space();
@@ -189,43 +222,13 @@ namespace VRCDeveloperTool
                         true
                     ) as AnimationClip;
 
-                    // まばたきアニメーション未設定時のエラー表示
-                    if (blinkController == null || blinkAnimClip == null)
-                    {
-                        EditorGUILayout.HelpBox("まばたきアニメーションが設定されていません", MessageType.Error);
-                    }
+
                 }
 
-                EditorGUILayout.Space();
-
-                // Standing AnimatorのEmoteに設定してあるAnimationファイル
-                if (standingAnimController != null)
+                // まばたきアニメーション未設定時のエラー表示
+                if (blinkController == null || blinkAnimClip == null)
                 {
-                    EditorGUILayout.LabelField("AnimationClips(Standing Anims)", EditorStyles.boldLabel);
-                    using (new EditorGUI.IndentLevelScope())
-                    {
-                        for (int i = 0; i < FACE_ANIM_NAMES.Length; i++)
-                        {
-                            if (standingAnimController == null || m_avatar.CustomStandingAnims[FACE_ANIM_NAMES[i]].name == FACE_ANIM_NAMES[i])
-                            {
-                                m_avatar.CustomStandingAnims[FACE_ANIM_NAMES[i]] = EditorGUILayout.ObjectField(
-                                    FACE_ANIM_NAMES[i],
-                                    null,
-                                    typeof(AnimationClip),
-                                    true
-                                ) as AnimationClip;
-                            }
-                            else
-                            {
-                                m_avatar.CustomStandingAnims[FACE_ANIM_NAMES[i]] = EditorGUILayout.ObjectField(
-                                    FACE_ANIM_NAMES[i],
-                                    m_avatar.CustomStandingAnims[FACE_ANIM_NAMES[i]],
-                                    typeof(AnimationClip),
-                                    true
-                                ) as AnimationClip;
-                            }
-                        }
-                    }
+                    EditorGUILayout.HelpBox("まばたきアニメーションが設定されていません", MessageType.Error);
                 }
 
                 EditorGUILayout.Space();
