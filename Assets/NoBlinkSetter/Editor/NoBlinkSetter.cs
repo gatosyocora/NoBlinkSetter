@@ -355,7 +355,8 @@ namespace VRCDeveloperTool
 
             if (duplicateAvatarAnimatorController)
             {
-                var animController = DuplicateAnimatorOverrideController(standingAnimController);
+                var fileName = standingAnimController.name + NOBLINK_ASSET_NAME;
+                var animController = DuplicateAnimatorOverrideController(standingAnimController, fileName, saveFolderPath);
                 objNoBlink.GetComponent<VRC_AvatarDescriptor>().CustomStandingAnims = animController;
                 standingAnimController = animController;
             }
@@ -824,12 +825,11 @@ namespace VRCDeveloperTool
         /// </summary>
         /// <param name="controller"></param>
         /// <returns></returns>
-        private AnimatorOverrideController DuplicateAnimatorOverrideController(AnimatorOverrideController controller)
+        private AnimatorOverrideController DuplicateAnimatorOverrideController(AnimatorOverrideController controller, string fileName, string saveFolderPath)
         {
             var originalPath = AssetDatabase.GetAssetPath(controller);
             var ext = Path.GetExtension(originalPath);
-            var folderPath = Path.GetDirectoryName(originalPath);
-            var newPath = folderPath + "/" +controller.name + NOBLINK_ASSET_NAME + ext;
+            var newPath = AssetDatabase.GenerateUniqueAssetPath(saveFolderPath + "/" + fileName + ext);
             AssetDatabase.CopyAsset(originalPath, newPath);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
