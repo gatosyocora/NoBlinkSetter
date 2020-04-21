@@ -43,6 +43,8 @@ namespace VRCDeveloperTool
         private const string NOBLINK_ANIMATION_PATH = "/OriginFiles/blink reset.anim";
         private const string NOBLINK_PREFAB_FOR_EYETRACKING_PATH = "/OriginFiles/Body.prefab";
 
+        private const string SAVE_FOLDER_NAME = "NoBlink";
+
         private const string TARGET_STATE_NAME = "blink reset";
         private const string NO_BLINK_ANIMATOR_OBJ_NAME = "blink reset";
 
@@ -477,8 +479,19 @@ namespace VRCDeveloperTool
 
             hasVRCEyeTracking = IsVRCEyeTrackingAvatar(avatar);
 
-            saveFolderPath = Path.GetDirectoryName(AssetDatabase.GetAssetPath(avatar.CustomStandingAnims));
-            Debug.Log(saveFolderPath);
+            var controllerFolderPath = Path.GetDirectoryName(AssetDatabase.GetAssetPath(avatar.CustomStandingAnims));
+
+            if (controllerFolderPath.EndsWith(SAVE_FOLDER_NAME))
+            {
+                saveFolderPath = controllerFolderPath;
+                return;
+            }
+
+            saveFolderPath = controllerFolderPath + "/" + SAVE_FOLDER_NAME;
+            if (!Directory.Exists(saveFolderPath))
+            {
+                AssetDatabase.CreateFolder(controllerFolderPath, SAVE_FOLDER_NAME);
+            }
 
             if (string.IsNullOrEmpty(saveFolderPath))
             {
