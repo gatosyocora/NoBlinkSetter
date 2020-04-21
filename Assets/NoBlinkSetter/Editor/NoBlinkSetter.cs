@@ -46,6 +46,8 @@ namespace VRCDeveloperTool
         private const string TARGET_STATE_NAME = "blink reset";
         private const string NO_BLINK_ANIMATOR_OBJ_NAME = "blink reset";
 
+        private const string NOBLINK_ASSET_NAME = "_blink reset";
+
         private readonly string[] FACE_ANIM_NAMES = { "FIST", "FINGERPOINT", "HANDOPEN", "HANDGUN", "THUMBSUP", "VICTORY", "ROCKNROLL" };
 
         [MenuItem("VRCDeveloperTool/NoBlinkSetter")]
@@ -289,7 +291,7 @@ namespace VRCDeveloperTool
             if (noBlinkAnimatorObjTrans == null)
             {
                 objNoBlink = DuplicationAvatarGameObject(obj);
-                objNoBlink.name = obj.name + "_blink reset";
+                objNoBlink.name = obj.name + NOBLINK_ASSET_NAME;
                 obj.SetActive(false);
 
                 faceMesh = objNoBlink.GetComponent<VRC_AvatarDescriptor>().VisemeSkinnedMesh;
@@ -563,7 +565,7 @@ namespace VRCDeveloperTool
 
                 containForBlendShape = false;
 
-                fileName = animClip_origin.name + "_blink reset";
+                fileName = animClip_origin.name + NOBLINK_ASSET_NAME;
                 animClip = Object.Instantiate(animClip_origin);
 
                 // AnimationClipのBindingすべてに対して
@@ -804,7 +806,7 @@ namespace VRCDeveloperTool
             var originalPath = AssetDatabase.GetAssetPath(controller);
             var ext = Path.GetExtension(originalPath);
             var folderPath = Path.GetDirectoryName(originalPath);
-            var newPath = folderPath + "/" +controller.name + "_blink reset" + ext;
+            var newPath = folderPath + "/" +controller.name + NOBLINK_ASSET_NAME + ext;
             AssetDatabase.CopyAsset(originalPath, newPath);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
