@@ -341,6 +341,13 @@ namespace VRCDeveloperTool
                 faceMesh = m_face;
             }
 
+            if (duplicateAvatarAnimatorController)
+            {
+                var animController = DuplicateAnimatorOverrideController(standingAnimController);
+                objNoBlink.GetComponent<VRC_AvatarDescriptor>().CustomStandingAnims = animController;
+                standingAnimController = animController;
+            }
+
             // アニメーションオーバーライド用のAnimationClipを新しいパスに設定しなおす
             // まばたきシェイプキーを使用しているキーを削除する
             ChangeAndSetAnimationKeysPathForFaceAnimations(ref standingAnimController, faceMesh.gameObject, noBlinkAnimatorObj, blinkAnimator.gameObject);
@@ -785,6 +792,26 @@ namespace VRCDeveloperTool
                                         .ToArray();
 
             return blinkBlendShapeNames;
+        }
+
+        /// <summary>
+        /// AnimatorOverrideControllerを複製する
+        /// </summary>
+        /// <param name="controller"></param>
+        /// <returns></returns>
+        private AnimatorOverrideController DuplicateAnimatorOverrideController(AnimatorOverrideController controller)
+        {
+            var originalPath = AssetDatabase.GetAssetPath(controller);
+            var ext = Path.GetExtension(originalPath);
+            var folderPath = Path.GetDirectoryName(originalPath);
+            var newPath = folderPath + "/" +controller.name + "_blink reset" + ext;
+            AssetDatabase.CopyAsset(originalPath, newPath);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
+            var newController = AssetDatabase.LoadAssetAtPath(newPath, typeof(AnimatorOverrideController)) as AnimatorOverrideController;
+
+            return newController;
         }
     }
 
