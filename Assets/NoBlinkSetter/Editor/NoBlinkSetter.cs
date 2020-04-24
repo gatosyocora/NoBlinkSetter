@@ -191,7 +191,26 @@ namespace VRCDeveloperTool
                         EditorGUILayout.HelpBox("アバターの顔のSkinnedMeshRendererを設定してください", MessageType.Error);
                     }
 
-                    EditorGUILayout.LabelField("BlendShape");
+                    using (new EditorGUILayout.HorizontalScope())
+                    {
+                        EditorGUILayout.LabelField("BlendShape");
+
+                        if (blinkBlendShapeNames == null)
+                        {
+                            GUILayout.FlexibleSpace();
+                            if (GUILayout.Button("+"))
+                            {
+                                blinkBlendShapeIndices.Add(-1);
+                            }
+                            if (GUILayout.Button("-"))
+                            {
+                                if (blinkBlendShapeIndices.Count > 1)
+                                {
+                                    blinkBlendShapeIndices.RemoveAt(blinkBlendShapeIndices.Count - 1);
+                                }
+                            }
+                        }
+                    }
                     using (new EditorGUI.IndentLevelScope())
                     {
                         if (blinkBlendShapeNames != null)
@@ -203,7 +222,10 @@ namespace VRCDeveloperTool
                         }
                         else
                         {
-                            //blinkBlendShapeIndex = EditorGUILayout.Popup("BlendShape", blinkBlendShapeIndex, blendShapeNames);
+                            for (int i = 0; i < blinkBlendShapeIndices.Count; i++)
+                            {
+                                blinkBlendShapeIndices[i] = EditorGUILayout.Popup(i + 1+string.Empty, blinkBlendShapeIndices[i], blendShapeNames);
+                            }
                             var currentIndentLevel = EditorGUI.indentLevel;
                             EditorGUI.indentLevel = 0;
                             EditorGUILayout.HelpBox("まばたき用BlendShapeが見つかりませんでした\nFaceMesh, BlinkController, BlinkAnimationが正しく設定されていることを確認してください", MessageType.Error);
@@ -233,7 +255,17 @@ namespace VRCDeveloperTool
                 // まばたきアニメーション未設定時のエラー表示
                 if (blinkController == null || blinkAnimClip == null)
                 {
-                    EditorGUILayout.HelpBox("まばたきアニメーションが設定されていません", MessageType.Error);
+                    EditorGUILayout.HelpBox("まばたきアニメーションが設定されていません\n自動作成するにはFaceMeshとBlendShapeを設定してください", MessageType.Error);
+
+                    EditorGUI.BeginDisabledGroup(
+                        faceRenderer == null ||
+                        blinkBlendShapeIndices.Where(x => x == -1).Any());
+                    {
+                        if (GUILayout.Button("まばたきアニメーションを自動作成する"))
+                        {
+
+                        }
+                    }
                 }
 
                 EditorGUILayout.Space();
@@ -466,6 +498,7 @@ namespace VRCDeveloperTool
                 var faceMesh = faceRenderer.sharedMesh;
                 var blendShapeNameList = new List<string>();
                 blinkBlendShapeIndices = new List<int>();
+                blinkBlendShapeIndices.Add(-1);
                 for (int blendShapeIndex = 0; blendShapeIndex < faceMesh.blendShapeCount; blendShapeIndex++)
                 {
                     var blendShapeName = faceMesh.GetBlendShapeName(blendShapeIndex);
