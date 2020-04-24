@@ -993,7 +993,7 @@ namespace VRCDeveloperTool
         /// <param name="blendShapeNames"></param>
         private void SetBlinkAnimation(SkinnedMeshRenderer faceRenderer, List<int> blinkBlendShapeIndexList, string[] blendShapeNames)
         {
-            var blinkBlendShapeNames = new string[blinkBlendShapeIndexList.Count()];
+            blinkBlendShapeNames = new string[blinkBlendShapeIndexList.Count()];
 
             for (int i = 0; i < blinkBlendShapeNames.Length; i++)
             {
