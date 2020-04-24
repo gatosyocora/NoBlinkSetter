@@ -487,7 +487,7 @@ namespace VRCDeveloperTool
                 return;
             }
 
-            saveFolderPath = controllerFolderPath + "/" + SAVE_FOLDER_NAME;
+            saveFolderPath = controllerFolderPath + "\\" + SAVE_FOLDER_NAME;
             if (!Directory.Exists(saveFolderPath))
             {
                 AssetDatabase.CreateFolder(controllerFolderPath, SAVE_FOLDER_NAME);
@@ -511,7 +511,7 @@ namespace VRCDeveloperTool
         /// <returns></returns>
         private AnimatorController CreateNoBlinkAnimatorController(string fileName, string folderPath)
         {
-            var new_assetsPath = AssetDatabase.GenerateUniqueAssetPath(saveFolderPath +"/"+ fileName + ".controller");
+            var new_assetsPath = AssetDatabase.GenerateUniqueAssetPath(saveFolderPath +"\\"+ fileName + ".controller");
             AssetDatabase.CopyAsset(folderPath + NOBLINK_ANIMATOR_PATH, new_assetsPath);
             var noBlinkAnimatorController_new = AssetDatabase.LoadAssetAtPath<AnimatorController>(new_assetsPath);
 
@@ -525,7 +525,7 @@ namespace VRCDeveloperTool
         /// <returns></returns>
         private AnimationClip CreateNoBlinkAnimationClip(string fileName, string folderPath)
         {
-            var new_assetsPath = AssetDatabase.GenerateUniqueAssetPath(saveFolderPath + "/" + fileName + ".anim");
+            var new_assetsPath = AssetDatabase.GenerateUniqueAssetPath(saveFolderPath + "\\" + fileName + ".anim");
             AssetDatabase.CopyAsset(folderPath + NOBLINK_ANIMATION_PATH, new_assetsPath);
 
             var noBlinkAnim_new = AssetDatabase.LoadAssetAtPath<AnimationClip>(new_assetsPath);
@@ -857,7 +857,7 @@ namespace VRCDeveloperTool
         {
             var originalPath = AssetDatabase.GetAssetPath(controller);
             var ext = Path.GetExtension(originalPath);
-            var newPath = AssetDatabase.GenerateUniqueAssetPath(saveFolderPath + "/" + fileName + ext);
+            var newPath = AssetDatabase.GenerateUniqueAssetPath(saveFolderPath + "\\" + fileName + ext);
             AssetDatabase.CopyAsset(originalPath, newPath);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
@@ -876,7 +876,7 @@ namespace VRCDeveloperTool
         {
             var originPath = AssetDatabase.GetAssetPath(animClip);
             var ext = Path.GetExtension(originPath);
-            var newPath = AssetDatabase.GenerateUniqueAssetPath(saveFolderPath + "/" + fileName + ext);
+            var newPath = AssetDatabase.GenerateUniqueAssetPath(saveFolderPath + "\\" + fileName + ext);
             AssetDatabase.CopyAsset(originPath, newPath);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
