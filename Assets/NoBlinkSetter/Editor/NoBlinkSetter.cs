@@ -457,10 +457,7 @@ namespace VRCDeveloperTool
                 }
 
                 // まばたきシェイプキーを取得
-                if (blinkAnimClip != null)
-                {
-                    blinkBlendShapeNames = GetBlinkBlendShapeNames(blinkAnimClip);
-                }
+                blinkBlendShapeNames = GetBlinkBlendShapeNames(blinkAnimClip);
 
                 // BlendShapeの一覧を取得
                 var faceMesh = faceRenderer.sharedMesh;
@@ -838,6 +835,8 @@ namespace VRCDeveloperTool
         /// <returns></returns>
         private string[] GetBlinkBlendShapeNames(AnimationClip blinkAnimClip)
         {
+            if (blinkAnimClip == null) return null;
+
             var bindings = AnimationUtility.GetCurveBindings(blinkAnimClip);
 
             var blinkBlendShapeNames = bindings
