@@ -269,6 +269,7 @@ namespace VRCDeveloperTool
                             SetBlinkAnimation(faceRenderer, blinkBlendShapeIndices, blendShapeNames);
                         }
                     }
+                    EditorGUI.EndDisabledGroup();
                 }
 
                 EditorGUILayout.Space();
