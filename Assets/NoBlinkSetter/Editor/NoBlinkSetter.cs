@@ -985,6 +985,12 @@ namespace VRCDeveloperTool
             }
         }
 
+        /// <summary>
+        /// まばたきアニメーションを作成して、設定する
+        /// </summary>
+        /// <param name="faceRenderer"></param>
+        /// <param name="blinkBlendShapeIndexList"></param>
+        /// <param name="blendShapeNames"></param>
         private void SetBlinkAnimation(SkinnedMeshRenderer faceRenderer, List<int> blinkBlendShapeIndexList, string[] blendShapeNames)
         {
             var blinkBlendShapeNames = new string[blinkBlendShapeIndexList.Count()];
