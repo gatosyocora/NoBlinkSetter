@@ -16,10 +16,10 @@ namespace VRCDeveloperTool
 
     public class NoBlinkSetter : EditorWindow
     {
-        private VRC_AvatarDescriptor m_avatar = null;
+        private VRC_AvatarDescriptor targetAvatar = null;
         private AnimatorOverrideController standingAnimController = null;
         private AnimatorOverrideController sittingAnimController = null;
-        private SkinnedMeshRenderer m_face = null;
+        private SkinnedMeshRenderer faceRenderer = null;
         private string[] blendShapeNames = null;
         private List<int> blinkBlendShapeIndices = null;
         private string[] blinkBlendShapeNames = null;
@@ -60,8 +60,8 @@ namespace VRCDeveloperTool
 
         private void AfterGetWindow()
         {
-            if (m_avatar != null)
-                GetAvatarInfo(m_avatar);
+            if (targetAvatar != null)
+                GetAvatarInfo(targetAvatar);
         }
 
         private void OnEnable()
@@ -73,24 +73,24 @@ namespace VRCDeveloperTool
         {
             EditorGUI.BeginChangeCheck();
             {
-                m_avatar = EditorGUILayout.ObjectField(
+                targetAvatar = EditorGUILayout.ObjectField(
                     "Avatar",
-                    m_avatar,
+                    targetAvatar,
                     typeof(VRC_AvatarDescriptor),
                     true
                 ) as VRC_AvatarDescriptor;
             }
             if (EditorGUI.EndChangeCheck())
             {
-                if (m_avatar != null)
+                if (targetAvatar != null)
                 {
-                    GetAvatarInfo(m_avatar);
-                    isSettingNoBlink = CheckSettingNoBlink(m_avatar.gameObject);
-                    duplicateAvatarAnimatorController = CheckNeedToDuplicateController(m_avatar);
+                    GetAvatarInfo(targetAvatar);
+                    isSettingNoBlink = CheckSettingNoBlink(targetAvatar.gameObject);
+                    duplicateAvatarAnimatorController = CheckNeedToDuplicateController(targetAvatar);
                 }
             }
 
-            if (m_avatar != null)
+            if (targetAvatar != null)
             {
                 // EyeTracking
                 using (new EditorGUI.IndentLevelScope())
@@ -99,9 +99,9 @@ namespace VRCDeveloperTool
                     EditorGUILayout.LabelField("NoBlinkSetter" + (isSettingNoBlink ? "設定済みアバター" : "未設定アバター"));
                 }
 
-                if (m_avatar != null && !isSettingNoBlink)
+                if (targetAvatar != null && !isSettingNoBlink)
                     EditorGUILayout.HelpBox("Avatarを複製して設定します", MessageType.Info);
-                else if (m_avatar != null && isSettingNoBlink)
+                else if (targetAvatar != null && isSettingNoBlink)
                     EditorGUILayout.HelpBox("AnimationClipsをNoBlinkに対応させます。", MessageType.Warning);
 
                 // VRC_AvatarDescripterに設定してあるAnimator
@@ -120,14 +120,14 @@ namespace VRCDeveloperTool
                     }
                     if (EditorGUI.EndChangeCheck())
                     {
-                        m_avatar.CustomStandingAnims = standingAnimController;
+                        targetAvatar.CustomStandingAnims = standingAnimController;
                     }
 
                     duplicateAvatarAnimatorController = EditorGUILayout.ToggleLeft("Standing Animsに設定されたAnimatorOverrideControllerを複製する", duplicateAvatarAnimatorController);
                 }
 
                 // CustomStandingAnims未設定時の警告表示
-                if (m_avatar != null && standingAnimController == null)
+                if (targetAvatar != null && standingAnimController == null)
                 {
                     EditorGUILayout.HelpBox("VRC_AvatarDescripterにCustom Standing Animsを設定してください", MessageType.Error);
                 }
@@ -142,9 +142,9 @@ namespace VRCDeveloperTool
                     {
                         for (int i = 0; i < FACE_ANIM_NAMES.Length; i++)
                         {
-                            if (standingAnimController == null || m_avatar.CustomStandingAnims[FACE_ANIM_NAMES[i]].name == FACE_ANIM_NAMES[i])
+                            if (standingAnimController == null || targetAvatar.CustomStandingAnims[FACE_ANIM_NAMES[i]].name == FACE_ANIM_NAMES[i])
                             {
-                                m_avatar.CustomStandingAnims[FACE_ANIM_NAMES[i]] = EditorGUILayout.ObjectField(
+                                targetAvatar.CustomStandingAnims[FACE_ANIM_NAMES[i]] = EditorGUILayout.ObjectField(
                                     FACE_ANIM_NAMES[i],
                                     null,
                                     typeof(AnimationClip),
@@ -153,9 +153,9 @@ namespace VRCDeveloperTool
                             }
                             else
                             {
-                                m_avatar.CustomStandingAnims[FACE_ANIM_NAMES[i]] = EditorGUILayout.ObjectField(
+                                targetAvatar.CustomStandingAnims[FACE_ANIM_NAMES[i]] = EditorGUILayout.ObjectField(
                                     FACE_ANIM_NAMES[i],
-                                    m_avatar.CustomStandingAnims[FACE_ANIM_NAMES[i]],
+                                    targetAvatar.CustomStandingAnims[FACE_ANIM_NAMES[i]],
                                     typeof(AnimationClip),
                                     true
                                 ) as AnimationClip;
@@ -172,16 +172,16 @@ namespace VRCDeveloperTool
                     // VRC_AvatarDescriptorに設定してあるFaceMesh
                     EditorGUI.BeginChangeCheck();
                     {
-                        m_avatar.VisemeSkinnedMesh = EditorGUILayout.ObjectField(
+                        targetAvatar.VisemeSkinnedMesh = EditorGUILayout.ObjectField(
                             "Face Mesh",
-                            m_avatar.VisemeSkinnedMesh,
+                            targetAvatar.VisemeSkinnedMesh,
                             typeof(SkinnedMeshRenderer),
                             true
                         ) as SkinnedMeshRenderer;
                     }
                     if (EditorGUI.EndChangeCheck())
                     {
-                        m_face = m_avatar.VisemeSkinnedMesh;
+                        m_face = targetAvatar.VisemeSkinnedMesh;
                     }
 
 
@@ -267,7 +267,7 @@ namespace VRCDeveloperTool
 
 
             EditorGUI.BeginDisabledGroup(
-                m_avatar == null || 
+                targetAvatar == null || 
                 m_face == null || 
                 blinkController == null || 
                 blinkAnimClip == null);
@@ -276,11 +276,11 @@ namespace VRCDeveloperTool
                 {
                     if (GUILayout.Button("Set NoBlink"))
                     {
-                        var noBlinkAvatar = SetNoBlink(m_avatar.gameObject, blinkAnimator);
+                        var noBlinkAvatar = SetNoBlink(targetAvatar.gameObject, blinkAnimator);
 
                         if (noBlinkAvatar != null) {
-                            m_avatar = noBlinkAvatar;
-                            GetAvatarInfo(m_avatar);
+                            targetAvatar = noBlinkAvatar;
+                            GetAvatarInfo(targetAvatar);
                             isSettingNoBlink = true;
                             duplicateAvatarAnimatorController = false;
                         }
