@@ -42,6 +42,8 @@ namespace VRCDeveloperTool
         private const string NOBLINK_ANIMATOR_PATH = "/OriginFiles/blink reset.controller";
         private const string NOBLINK_ANIMATION_PATH = "/OriginFiles/blink reset.anim";
         private const string NOBLINK_PREFAB_FOR_EYETRACKING_PATH = "/OriginFiles/Body.prefab";
+        private const string BLINK_CONTROLLER_PATH = "/OriginFiles/BlinkController.controller";
+        private const string BLINK_ANIMATION_CLIP_PATH = "/OriginFiles/BlinkAnimation.anim";
 
         private const string SAVE_FOLDER_NAME = "NoBlink";
 
@@ -264,7 +266,7 @@ namespace VRCDeveloperTool
                     {
                         if (GUILayout.Button("まばたきアニメーションを自動作成する"))
                         {
-
+                            SetBlinkAnimation(faceRenderer, blinkBlendShapeIndices, blendShapeNames);
                         }
                     }
                 }
@@ -980,6 +982,53 @@ namespace VRCDeveloperTool
             else
             {
                 return null;
+            }
+        }
+
+        private void SetBlinkAnimation(SkinnedMeshRenderer faceRenderer, List<int> blinkBlendShapeIndexList, string[] blendShapeNames)
+        {
+            var blinkBlendShapeNames = new string[blinkBlendShapeIndexList.Count()];
+
+            for (int i = 0; i < blinkBlendShapeNames.Length; i++)
+            {
+                blinkBlendShapeNames[i] = blendShapeNames[blinkBlendShapeIndexList[i]];
+            }
+
+            if (blinkAnimator == null)
+            {
+                blinkAnimator = faceRenderer.gameObject.AddComponent<Animator>();
+                var originBlinkControllerPath = noBlinkSetterFolderPath + BLINK_CONTROLLER_PATH;
+                var newBlinkControllerPath = AssetDatabase.GenerateUniqueAssetPath(saveFolderPath + "\\" + "BlinkController.controller");
+                AssetDatabase.CopyAsset(originBlinkControllerPath, newBlinkControllerPath);
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
+                blinkController = AssetDatabase.LoadAssetAtPath(newBlinkControllerPath, typeof(AnimatorController)) as AnimatorController;
+                blinkAnimator.runtimeAnimatorController = blinkController as RuntimeAnimatorController;
+            }
+            if (blinkAnimClip == null)
+            {
+                var originBlinkAnimClipPath = noBlinkSetterFolderPath + BLINK_ANIMATION_CLIP_PATH;
+                var newBlinkAnimClipPath = AssetDatabase.GenerateUniqueAssetPath(saveFolderPath + "\\" + "BlinkAnimation.anim");
+                AssetDatabase.CopyAsset(originBlinkAnimClipPath, newBlinkAnimClipPath);
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
+                blinkAnimClip = AssetDatabase.LoadAssetAtPath(newBlinkAnimClipPath, typeof(AnimationClip)) as AnimationClip;
+                blinkController.layers[0].stateMachine.states[0].state.motion = blinkAnimClip;
+
+                var originalBlinkBinding = AnimationUtility.GetCurveBindings(blinkAnimClip).First();
+                var blinkCurve = AnimationUtility.GetEditorCurve(blinkAnimClip, originalBlinkBinding);
+
+                AnimationUtility.SetEditorCurve(blinkAnimClip, originalBlinkBinding, null);
+
+                foreach (var blinkBlendShapeName in blinkBlendShapeNames)
+                {
+                    var blinkBinding = new EditorCurveBinding();
+                    blinkBinding.propertyName = "blendShape." + blinkBlendShapeName;
+                    blinkBinding.path = string.Empty;
+                    blinkBinding.type = typeof(SkinnedMeshRenderer);
+                    AnimationUtility.SetEditorCurve(blinkAnimClip, blinkBinding, blinkCurve);
+                }
+                AssetDatabase.SaveAssets();
             }
         }
     }
