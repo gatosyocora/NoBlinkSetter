@@ -220,7 +220,7 @@ namespace VRCDeveloperTool
                                 EditorGUILayout.LabelField(blinkBlendShapeName);
                             }
                         }
-                        else
+                        else if (blinkBlendShapeIndices != null)
                         {
                             for (int i = 0; i < blinkBlendShapeIndices.Count; i++)
                             {
@@ -259,6 +259,7 @@ namespace VRCDeveloperTool
 
                     EditorGUI.BeginDisabledGroup(
                         faceRenderer == null ||
+                        blinkBlendShapeIndices == null ||
                         blinkBlendShapeIndices.Where(x => x == -1).Any());
                     {
                         if (GUILayout.Button("まばたきアニメーションを自動作成する"))
