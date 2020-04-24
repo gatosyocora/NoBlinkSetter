@@ -100,9 +100,9 @@ namespace VRCDeveloperTool
                 }
 
                 if (targetAvatar != null && !isSettingNoBlink)
-                    EditorGUILayout.HelpBox("Avatarを複製して設定します", MessageType.Info);
+                    EditorGUILayout.HelpBox("Avatarを複製してNoBlinkを設定します", MessageType.Info);
                 else if (targetAvatar != null && isSettingNoBlink)
-                    EditorGUILayout.HelpBox("AnimationClipsをNoBlinkに対応させます。", MessageType.Warning);
+                    EditorGUILayout.HelpBox("AnimationClipsを編集してNoBlinkに対応させます", MessageType.Warning);
 
                 // VRC_AvatarDescripterに設定してあるAnimator
                 EditorGUILayout.Space();
@@ -188,7 +188,7 @@ namespace VRCDeveloperTool
                     // FaceMesh未設定時の警告表示
                     if (faceRenderer == null)
                     {
-                        EditorGUILayout.HelpBox("VRC_AvatarDescripterにFaceMeshを設定してください", MessageType.Error);
+                        EditorGUILayout.HelpBox("アバターの顔のSkinnedMeshRendererを設定してください", MessageType.Error);
                     }
 
                     EditorGUILayout.LabelField("BlendShape");
@@ -203,22 +203,22 @@ namespace VRCDeveloperTool
                         }
                         else
                         {
-                            EditorGUILayout.LabelField("まばたき用BlendShapeが見つかりませんでした");
                             //blinkBlendShapeIndex = EditorGUILayout.Popup("BlendShape", blinkBlendShapeIndex, blendShapeNames);
+                            EditorGUILayout.HelpBox("まばたき用BlendShapeが見つかりませんでした。FaceMesh, BlinkController, BlinkAnimationが正しく設定されていることを確認してください", MessageType.Error);
                         }
                     }
 
                     // まばたき用AnimatorController
                     EditorGUILayout.Space();
                     blinkController = EditorGUILayout.ObjectField(
-                        "AnimatorController",
+                        "Blink Controller",
                         blinkController,
                         typeof(AnimatorController),
                         true
                     ) as AnimatorController;
 
                     blinkAnimClip = EditorGUILayout.ObjectField(
-                        "AnimationClip",
+                        "Blink Animation",
                         blinkAnimClip,
                         typeof(AnimationClip),
                         true
