@@ -181,12 +181,12 @@ namespace VRCDeveloperTool
                     }
                     if (EditorGUI.EndChangeCheck())
                     {
-                        m_face = targetAvatar.VisemeSkinnedMesh;
+                        faceRenderer = targetAvatar.VisemeSkinnedMesh;
                     }
 
 
                     // FaceMesh未設定時の警告表示
-                    if (m_face == null)
+                    if (faceRenderer == null)
                     {
                         EditorGUILayout.HelpBox("VRC_AvatarDescripterにFaceMeshを設定してください", MessageType.Error);
                     }
@@ -268,7 +268,7 @@ namespace VRCDeveloperTool
 
             EditorGUI.BeginDisabledGroup(
                 targetAvatar == null || 
-                m_face == null || 
+                faceRenderer == null || 
                 blinkController == null || 
                 blinkAnimClip == null);
             {
@@ -356,7 +356,7 @@ namespace VRCDeveloperTool
             {
                 objNoBlink = obj;
                 noBlinkAnimatorObj = noBlinkAnimatorObjTrans.gameObject;
-                faceMesh = m_face;
+                faceMesh = faceRenderer;
             }
 
             // まばたきアニメーションを最適化する
@@ -435,12 +435,12 @@ namespace VRCDeveloperTool
         {
             if (avatar == null) return;
 
-            m_face = avatar.VisemeSkinnedMesh;
+            faceRenderer = avatar.VisemeSkinnedMesh;
 
-            if (m_face != null)
+            if (faceRenderer != null)
             {
                 // まばたきアニメーションを取得
-                blinkAnimator = GetBlinkAnimator(m_face.gameObject);
+                blinkAnimator = GetBlinkAnimator(faceRenderer.gameObject);
                 if (blinkAnimator != null)
                 {
                     blinkController = blinkAnimator.runtimeAnimatorController as AnimatorController;
@@ -463,7 +463,7 @@ namespace VRCDeveloperTool
                 }
 
                 // BlendShapeの一覧を取得
-                var faceMesh = m_face.sharedMesh;
+                var faceMesh = faceRenderer.sharedMesh;
                 var blendShapeNameList = new List<string>();
                 blinkBlendShapeIndices = new List<int>();
                 for (int blendShapeIndex = 0; blendShapeIndex < faceMesh.blendShapeCount; blendShapeIndex++)
