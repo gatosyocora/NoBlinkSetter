@@ -184,6 +184,7 @@ namespace VRCDeveloperTool
                     if (EditorGUI.EndChangeCheck())
                     {
                         faceRenderer = targetAvatar.VisemeSkinnedMesh;
+                        blendShapeNames = GetBlendShapeNames(faceRenderer);
                     }
 
 
@@ -196,45 +197,48 @@ namespace VRCDeveloperTool
                         EditorGUI.indentLevel = currentIndentLevel;
                     }
 
-                    using (new EditorGUILayout.HorizontalScope())
+                    if (faceRenderer != null)
                     {
-                        EditorGUILayout.LabelField("BlendShape");
-
-                        if (blinkBlendShapeNames == null)
+                        using (new EditorGUILayout.HorizontalScope())
                         {
-                            GUILayout.FlexibleSpace();
-                            if (GUILayout.Button("+"))
+                            EditorGUILayout.LabelField("BlendShape");
+
+                            if (blinkBlendShapeNames == null)
                             {
-                                blinkBlendShapeIndices.Add(-1);
-                            }
-                            if (GUILayout.Button("-"))
-                            {
-                                if (blinkBlendShapeIndices.Count > 1)
+                                GUILayout.FlexibleSpace();
+                                if (GUILayout.Button("+"))
                                 {
-                                    blinkBlendShapeIndices.RemoveAt(blinkBlendShapeIndices.Count - 1);
+                                    blinkBlendShapeIndices.Add(-1);
+                                }
+                                if (GUILayout.Button("-"))
+                                {
+                                    if (blinkBlendShapeIndices.Count > 1)
+                                    {
+                                        blinkBlendShapeIndices.RemoveAt(blinkBlendShapeIndices.Count - 1);
+                                    }
                                 }
                             }
                         }
-                    }
-                    using (new EditorGUI.IndentLevelScope())
-                    {
-                        if (blinkBlendShapeNames != null)
+                        using (new EditorGUI.IndentLevelScope())
                         {
-                            foreach (var blinkBlendShapeName in blinkBlendShapeNames)
+                            if (blinkBlendShapeNames != null)
                             {
-                                EditorGUILayout.LabelField(blinkBlendShapeName);
+                                foreach (var blinkBlendShapeName in blinkBlendShapeNames)
+                                {
+                                    EditorGUILayout.LabelField(blinkBlendShapeName);
+                                }
                             }
-                        }
-                        else if (blinkBlendShapeIndices != null)
-                        {
-                            for (int i = 0; i < blinkBlendShapeIndices.Count; i++)
+                            else if (blinkBlendShapeIndices != null)
                             {
-                                blinkBlendShapeIndices[i] = EditorGUILayout.Popup(i + 1+string.Empty, blinkBlendShapeIndices[i], blendShapeNames);
+                                for (int i = 0; i < blinkBlendShapeIndices.Count; i++)
+                                {
+                                    blinkBlendShapeIndices[i] = EditorGUILayout.Popup(i + 1 + string.Empty, blinkBlendShapeIndices[i], blendShapeNames);
+                                }
+                                var currentIndentLevel = EditorGUI.indentLevel;
+                                EditorGUI.indentLevel = 0;
+                                EditorGUILayout.HelpBox("まばたき用BlendShapeが見つかりませんでした\nFaceMesh, BlinkController, BlinkAnimationが正しく設定されていることを確認してください", MessageType.Error);
+                                EditorGUI.indentLevel = currentIndentLevel;
                             }
-                            var currentIndentLevel = EditorGUI.indentLevel;
-                            EditorGUI.indentLevel = 0;
-                            EditorGUILayout.HelpBox("まばたき用BlendShapeが見つかりませんでした\nFaceMesh, BlinkController, BlinkAnimationが正しく設定されていることを確認してください", MessageType.Error);
-                            EditorGUI.indentLevel = currentIndentLevel;
                         }
                     }
 
@@ -502,14 +506,7 @@ namespace VRCDeveloperTool
                 blinkBlendShapeNames = GetBlinkBlendShapeNames(blinkAnimClip);
 
                 // BlendShapeの一覧を取得
-                var faceMesh = faceRenderer.sharedMesh;
-                var blendShapeNameList = new List<string>();
-                for (int blendShapeIndex = 0; blendShapeIndex < faceMesh.blendShapeCount; blendShapeIndex++)
-                {
-                    var blendShapeName = faceMesh.GetBlendShapeName(blendShapeIndex);
-                    blendShapeNameList.Add(blendShapeName);
-                }
-                blendShapeNames = blendShapeNameList.ToArray();
+                blendShapeNames = GetBlendShapeNames(faceRenderer);
             }
 
             blinkBlendShapeIndices = new List<int>();
@@ -1062,6 +1059,18 @@ namespace VRCDeveloperTool
                 }
                 AssetDatabase.SaveAssets();
             }
+        }
+
+        private string[] GetBlendShapeNames(SkinnedMeshRenderer renderer)
+        {
+            var faceMesh = renderer.sharedMesh;
+            var blendShapeNameList = new List<string>();
+            for (int blendShapeIndex = 0; blendShapeIndex < faceMesh.blendShapeCount; blendShapeIndex++)
+            {
+                var blendShapeName = faceMesh.GetBlendShapeName(blendShapeIndex);
+                blendShapeNameList.Add(blendShapeName);
+            }
+            return blendShapeNameList.ToArray();
         }
     }
 
