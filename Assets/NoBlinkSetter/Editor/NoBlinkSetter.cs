@@ -517,6 +517,7 @@ namespace VRCDeveloperTool
 
             hasVRCEyeTracking = IsVRCEyeTrackingAvatar(avatar);
 
+            saveFolderPath = string.Empty;
             if (standingAnimController != null)
             {
                 var customStandingAnimsPath = AssetDatabase.GetAssetPath(avatar.CustomStandingAnims);
