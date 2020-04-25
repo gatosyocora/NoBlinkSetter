@@ -1068,6 +1068,11 @@ namespace VRCDeveloperTool
             }
         }
 
+        /// <summary>
+        /// BlendShapeの一覧を取得する
+        /// </summary>
+        /// <param name="renderer"></param>
+        /// <returns></returns>
         private string[] GetBlendShapeNames(SkinnedMeshRenderer renderer)
         {
             var faceMesh = renderer.sharedMesh;
