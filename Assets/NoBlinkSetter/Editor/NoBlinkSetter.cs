@@ -504,8 +504,6 @@ namespace VRCDeveloperTool
                 // BlendShapeの一覧を取得
                 var faceMesh = faceRenderer.sharedMesh;
                 var blendShapeNameList = new List<string>();
-                blinkBlendShapeIndices = new List<int>();
-                blinkBlendShapeIndices.Add(-1);
                 for (int blendShapeIndex = 0; blendShapeIndex < faceMesh.blendShapeCount; blendShapeIndex++)
                 {
                     var blendShapeName = faceMesh.GetBlendShapeName(blendShapeIndex);
@@ -513,6 +511,9 @@ namespace VRCDeveloperTool
                 }
                 blendShapeNames = blendShapeNameList.ToArray();
             }
+
+            blinkBlendShapeIndices = new List<int>();
+            blinkBlendShapeIndices.Add(-1);
 
             standingAnimController = avatar.CustomStandingAnims;
             sittingAnimController = avatar.CustomSittingAnims;
