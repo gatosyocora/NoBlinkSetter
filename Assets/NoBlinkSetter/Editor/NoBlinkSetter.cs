@@ -1015,7 +1015,7 @@ namespace VRCDeveloperTool
         {
             blinkBlendShapeNames = new string[blinkBlendShapeIndexList.Count()];
 
-            if (string.IsNullOrEmpty(avatarName))
+            if (!string.IsNullOrEmpty(avatarName))
             {
                 avatarName = "_" + avatarName;
             }
