@@ -520,28 +520,44 @@ namespace VRCDeveloperTool
 
             hasVRCEyeTracking = IsVRCEyeTrackingAvatar(avatar);
 
-            var controllerFolderPath = Path.GetDirectoryName(AssetDatabase.GetAssetPath(avatar.CustomStandingAnims));
-
-            if (controllerFolderPath.EndsWith(SAVE_FOLDER_NAME))
+            if (standingAnimController != null)
             {
-                saveFolderPath = controllerFolderPath;
-                return;
-            }
+                var customStandingAnimsPath = AssetDatabase.GetAssetPath(avatar.CustomStandingAnims);
+                var controllerFolderPath = Path.GetDirectoryName(customStandingAnimsPath);
 
-            saveFolderPath = controllerFolderPath + "\\" + SAVE_FOLDER_NAME;
-            if (!Directory.Exists(saveFolderPath))
-            {
-                AssetDatabase.CreateFolder(controllerFolderPath, SAVE_FOLDER_NAME);
-            }
-
-            if (string.IsNullOrEmpty(saveFolderPath))
-            {
-                string animationFolderPath = noBlinkSetterFolderPath + "/Animations";
-                if (!Directory.Exists(animationFolderPath))
+                if (controllerFolderPath.EndsWith(SAVE_FOLDER_NAME))
                 {
-                    AssetDatabase.CreateFolder(noBlinkSetterFolderPath, "Animations");
+                    saveFolderPath = controllerFolderPath;
+                    return;
                 }
-                saveFolderPath = animationFolderPath;
+
+                saveFolderPath = controllerFolderPath + "\\" + SAVE_FOLDER_NAME;
+                if (!Directory.Exists(saveFolderPath))
+                {
+                    AssetDatabase.CreateFolder(controllerFolderPath, SAVE_FOLDER_NAME);
+                }
+
+                if (string.IsNullOrEmpty(saveFolderPath))
+                {
+                    string animationFolderPath = noBlinkSetterFolderPath + "/Animations";
+                    if (!Directory.Exists(animationFolderPath))
+                    {
+                        AssetDatabase.CreateFolder(noBlinkSetterFolderPath, "Animations");
+                    }
+                    saveFolderPath = animationFolderPath;
+                }
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(saveFolderPath))
+                {
+                    string animationFolderPath = noBlinkSetterFolderPath + "/Animations";
+                    if (!Directory.Exists(animationFolderPath))
+                    {
+                        AssetDatabase.CreateFolder(noBlinkSetterFolderPath, "Animations");
+                    }
+                    saveFolderPath = animationFolderPath;
+                }
             }
         }
 
@@ -1008,6 +1024,10 @@ namespace VRCDeveloperTool
             if (blinkAnimator == null)
             {
                 blinkAnimator = faceRenderer.gameObject.AddComponent<Animator>();
+            }
+
+            if (blinkController == null)
+            {
                 var originBlinkControllerPath = noBlinkSetterFolderPath + BLINK_CONTROLLER_PATH;
                 var newBlinkControllerPath = AssetDatabase.GenerateUniqueAssetPath(saveFolderPath + "\\" + "BlinkController.controller");
                 AssetDatabase.CopyAsset(originBlinkControllerPath, newBlinkControllerPath);
@@ -1016,6 +1036,7 @@ namespace VRCDeveloperTool
                 blinkController = AssetDatabase.LoadAssetAtPath(newBlinkControllerPath, typeof(AnimatorController)) as AnimatorController;
                 blinkAnimator.runtimeAnimatorController = blinkController as RuntimeAnimatorController;
             }
+
             if (blinkAnimClip == null)
             {
                 var originBlinkAnimClipPath = noBlinkSetterFolderPath + BLINK_ANIMATION_CLIP_PATH;
