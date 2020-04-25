@@ -633,6 +633,8 @@ namespace VRCDeveloperTool
         /// <param name="noBlinkAnimatorObj"></param>
         private void ChangeAndSetAnimationKeysPathForFaceAnimations(ref AnimatorOverrideController controller, GameObject targetObj, GameObject noBlinkAnimatorObj, GameObject blinkAnimatorObj)
         {
+            if (controller == null) return;
+
             var new_path = GetHierarchyPath(targetObj);
 
             AnimationClip animClip_origin = null, animClip = null;
