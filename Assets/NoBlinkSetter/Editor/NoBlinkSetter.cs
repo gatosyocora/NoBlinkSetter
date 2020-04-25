@@ -131,7 +131,7 @@ namespace VRCDeveloperTool
                 // CustomStandingAnims未設定時の警告表示
                 if (targetAvatar != null && standingAnimController == null)
                 {
-                    EditorGUILayout.HelpBox("VRC_AvatarDescripterにCustom Standing Animsを設定してください", MessageType.Error);
+                    EditorGUILayout.HelpBox("表情アニメーションをまばたき防止に対応させるためにはCustom Standing Animsの設定が必要です", MessageType.Warning);
                 }
 
                 EditorGUILayout.Space();
