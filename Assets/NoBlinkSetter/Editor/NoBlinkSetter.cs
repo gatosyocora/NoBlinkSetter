@@ -987,10 +987,12 @@ namespace VRCDeveloperTool
 
                     for (int i = 0; i < newKeys.Length; i++)
                     {
+                        // 他のBlendShapeを弄るキーも同じようにずらすためにずらすキーの開始反映にindexではなくtimeを使う
                         if (newKeys[i].time < shiftStartTime) continue;
 
                         newKeys[i].time += (3f - shiftStartTime);
                     }
+                    curve.keys = newKeys;
 
                     AnimationUtility.SetEditorCurve(newBlinkAnimClip, binding, curve);
                 }
