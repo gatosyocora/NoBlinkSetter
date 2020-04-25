@@ -190,7 +190,10 @@ namespace VRCDeveloperTool
                     // FaceMesh未設定時の警告表示
                     if (faceRenderer == null)
                     {
+                        var currentIndentLevel = EditorGUI.indentLevel;
+                        EditorGUI.indentLevel = 0;
                         EditorGUILayout.HelpBox("アバターの顔のSkinnedMeshRendererを設定してください", MessageType.Error);
+                        EditorGUI.indentLevel = currentIndentLevel;
                     }
 
                     using (new EditorGUILayout.HorizontalScope())
