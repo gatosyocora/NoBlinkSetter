@@ -273,7 +273,7 @@ namespace VRCDeveloperTool
                     {
                         if (GUILayout.Button("まばたきアニメーションを自動作成する"))
                         {
-                            SetBlinkAnimation(faceRenderer, blinkBlendShapeIndices, blendShapeNames);
+                            SetBlinkAnimation(targetAvatar.name, faceRenderer, blinkBlendShapeIndices, blendShapeNames);
                         }
                     }
                     EditorGUI.EndDisabledGroup();
@@ -1011,9 +1011,14 @@ namespace VRCDeveloperTool
         /// <param name="faceRenderer"></param>
         /// <param name="blinkBlendShapeIndexList"></param>
         /// <param name="blendShapeNames"></param>
-        private void SetBlinkAnimation(SkinnedMeshRenderer faceRenderer, List<int> blinkBlendShapeIndexList, string[] blendShapeNames)
+        private void SetBlinkAnimation(string avatarName, SkinnedMeshRenderer faceRenderer, List<int> blinkBlendShapeIndexList, string[] blendShapeNames)
         {
             blinkBlendShapeNames = new string[blinkBlendShapeIndexList.Count()];
+
+            if (string.IsNullOrEmpty(avatarName))
+            {
+                avatarName = "_" + avatarName;
+            }
 
             for (int i = 0; i < blinkBlendShapeNames.Length; i++)
             {
@@ -1028,7 +1033,7 @@ namespace VRCDeveloperTool
             if (blinkController == null)
             {
                 var originBlinkControllerPath = noBlinkSetterFolderPath + BLINK_CONTROLLER_PATH;
-                var newBlinkControllerPath = AssetDatabase.GenerateUniqueAssetPath(saveFolderPath + "\\" + "BlinkController.controller");
+                var newBlinkControllerPath = AssetDatabase.GenerateUniqueAssetPath(saveFolderPath + "\\" + "BlinkController" + avatarName + ".controller");
                 AssetDatabase.CopyAsset(originBlinkControllerPath, newBlinkControllerPath);
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
@@ -1039,7 +1044,7 @@ namespace VRCDeveloperTool
             if (blinkAnimClip == null)
             {
                 var originBlinkAnimClipPath = noBlinkSetterFolderPath + BLINK_ANIMATION_CLIP_PATH;
-                var newBlinkAnimClipPath = AssetDatabase.GenerateUniqueAssetPath(saveFolderPath + "\\" + "BlinkAnimation.anim");
+                var newBlinkAnimClipPath = AssetDatabase.GenerateUniqueAssetPath(saveFolderPath + "\\" + "BlinkAnimation" + avatarName + ".anim");
                 AssetDatabase.CopyAsset(originBlinkAnimClipPath, newBlinkAnimClipPath);
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
