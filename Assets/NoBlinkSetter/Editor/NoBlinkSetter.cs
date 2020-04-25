@@ -959,7 +959,7 @@ namespace VRCDeveloperTool
 
                 for (int i = 0; i < keys.Length; i++)
                 {
-                    if (keys[i].time < 3f && keys[i].value > 0f)
+                    if (keys[i].time < 3f && keys[i].time != 0f)
                     {
                         needShiftAnimationKeys = true;
                         shiftStartTime = keys[i].time;
