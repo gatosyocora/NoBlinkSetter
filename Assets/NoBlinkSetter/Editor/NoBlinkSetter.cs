@@ -525,36 +525,33 @@ namespace VRCDeveloperTool
                 if (controllerFolderPath.EndsWith(SAVE_FOLDER_NAME))
                 {
                     saveFolderPath = controllerFolderPath;
-                    return;
                 }
-
-                saveFolderPath = controllerFolderPath + "\\" + SAVE_FOLDER_NAME;
-                if (!Directory.Exists(saveFolderPath))
+                else
                 {
-                    AssetDatabase.CreateFolder(controllerFolderPath, SAVE_FOLDER_NAME);
-                }
-
-                if (string.IsNullOrEmpty(saveFolderPath))
-                {
-                    string animationFolderPath = noBlinkSetterFolderPath + "/Animations";
-                    if (!Directory.Exists(animationFolderPath))
+                    saveFolderPath = controllerFolderPath + "\\" + SAVE_FOLDER_NAME;
+                    if (!Directory.Exists(saveFolderPath))
                     {
-                        AssetDatabase.CreateFolder(noBlinkSetterFolderPath, "Animations");
+                        AssetDatabase.CreateFolder(controllerFolderPath, SAVE_FOLDER_NAME);
+                        AssetDatabase.SaveAssets();
+                        AssetDatabase.Refresh();
                     }
-                    saveFolderPath = animationFolderPath;
                 }
             }
-            else
+
+            if (string.IsNullOrEmpty(saveFolderPath))
             {
-                if (string.IsNullOrEmpty(saveFolderPath))
+                var avatarName = targetAvatar.name.Replace(NOBLINK_ASSET_NAME, string.Empty);
+                var animationFolderPath = "Assets/NoBlinkAnimations";
+                if (!Directory.Exists(animationFolderPath))
                 {
-                    string animationFolderPath = noBlinkSetterFolderPath + "/Animations";
-                    if (!Directory.Exists(animationFolderPath))
-                    {
-                        AssetDatabase.CreateFolder(noBlinkSetterFolderPath, "Animations");
-                    }
-                    saveFolderPath = animationFolderPath;
+                    AssetDatabase.CreateFolder("Assets", "NoBlinkAnimations");
                 }
+                var avatarFolderPath = animationFolderPath + "/" + avatarName;
+                if (!Directory.Exists(avatarFolderPath))
+                {
+                    AssetDatabase.CreateFolder(animationFolderPath, avatarName);
+                }
+                saveFolderPath = avatarFolderPath;
             }
         }
 
