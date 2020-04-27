@@ -242,7 +242,16 @@ namespace VRCDeveloperTool
                                 }
                                 var currentIndentLevel = EditorGUI.indentLevel;
                                 EditorGUI.indentLevel = 0;
-                                EditorGUILayout.HelpBox("まばたき用BlendShapeが見つかりませんでした\nFaceMesh, BlinkController, BlinkAnimationが正しく設定されていることを確認してください", MessageType.Error);
+
+                                if (blinkController == null || blinkAnimClip == null)
+                                {
+                                    EditorGUILayout.HelpBox("まばたきアニメーションを自動作成するためには\nまばたき用のBlendShapeを選択してください", MessageType.Error);
+                                }
+                                else
+                                {
+                                    EditorGUILayout.HelpBox("まばたき用BlendShapeが見つかりませんでした\nFaceMesh, BlinkController, BlinkAnimationが正しく設定されていることを確認してください", MessageType.Error);
+                                }
+
                                 EditorGUI.indentLevel = currentIndentLevel;
                             }
                         }
