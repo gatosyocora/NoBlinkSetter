@@ -259,21 +259,31 @@ namespace VRCDeveloperTool
 
                     // まばたき用AnimatorController
                     EditorGUILayout.Space();
-                    blinkController = EditorGUILayout.ObjectField(
-                        "Blink Controller",
-                        blinkController,
-                        typeof(AnimatorController),
-                        true
-                    ) as AnimatorController;
 
-                    blinkAnimClip = EditorGUILayout.ObjectField(
-                        "Blink Animation",
-                        blinkAnimClip,
-                        typeof(AnimationClip),
-                        true
-                    ) as AnimationClip;
+                    using (var check = new EditorGUI.ChangeCheckScope())
+                    {
+                        blinkController = EditorGUILayout.ObjectField(
+                            "Blink Controller",
+                            blinkController,
+                            typeof(AnimatorController),
+                            true
+                        ) as AnimatorController;
 
+                        blinkAnimClip = EditorGUILayout.ObjectField(
+                            "Blink Animation",
+                            blinkAnimClip,
+                            typeof(AnimationClip),
+                            true
+                        ) as AnimationClip;
 
+                        if (check.changed)
+                        {
+                            if (blinkAnimClip != null)
+                            {
+                                blinkBlendShapeNames = GetBlinkBlendShapeNames(blinkAnimClip);
+                            }
+                        }
+                    }
                 }
 
                 // まばたきアニメーション未設定時のエラー表示
