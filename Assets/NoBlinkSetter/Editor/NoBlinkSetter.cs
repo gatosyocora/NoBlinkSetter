@@ -66,6 +66,8 @@ namespace VRCDeveloperTool
             {
                 GetAvatarInfo(targetAvatar);
                 saveFolderPath = GetSaveFolderPath(standingAnimController);
+                isSettingNoBlink = CheckSettingNoBlink(targetAvatar.gameObject);
+                duplicateAvatarAnimatorController = CheckNeedToDuplicateController(targetAvatar);
             }
         }
 
