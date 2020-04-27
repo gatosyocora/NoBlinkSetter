@@ -63,7 +63,10 @@ namespace VRCDeveloperTool
         private void AfterGetWindow()
         {
             if (targetAvatar != null)
+            {
                 GetAvatarInfo(targetAvatar);
+                saveFolderPath = GetSaveFolderPath(standingAnimController);
+            }
         }
 
         private void OnEnable()
@@ -87,6 +90,7 @@ namespace VRCDeveloperTool
                 if (targetAvatar != null)
                 {
                     GetAvatarInfo(targetAvatar);
+                    saveFolderPath = GetSaveFolderPath(standingAnimController);
                     isSettingNoBlink = CheckSettingNoBlink(targetAvatar.gameObject);
                     duplicateAvatarAnimatorController = CheckNeedToDuplicateController(targetAvatar);
                 }
@@ -327,6 +331,7 @@ namespace VRCDeveloperTool
                         if (noBlinkAvatar != null) {
                             targetAvatar = noBlinkAvatar;
                             GetAvatarInfo(targetAvatar);
+                            saveFolderPath = GetSaveFolderPath(standingAnimController);
                             isSettingNoBlink = true;
                             duplicateAvatarAnimatorController = false;
                         }
@@ -516,44 +521,6 @@ namespace VRCDeveloperTool
             sittingAnimController = avatar.CustomSittingAnims;
 
             hasVRCEyeTracking = IsVRCEyeTrackingAvatar(avatar);
-
-            saveFolderPath = string.Empty;
-            if (standingAnimController != null)
-            {
-                var customStandingAnimsPath = AssetDatabase.GetAssetPath(avatar.CustomStandingAnims);
-                var controllerFolderPath = Path.GetDirectoryName(customStandingAnimsPath);
-
-                if (controllerFolderPath.EndsWith(SAVE_FOLDER_NAME))
-                {
-                    saveFolderPath = controllerFolderPath;
-                }
-                else
-                {
-                    saveFolderPath = controllerFolderPath + "\\" + SAVE_FOLDER_NAME;
-                    if (!Directory.Exists(saveFolderPath))
-                    {
-                        AssetDatabase.CreateFolder(controllerFolderPath, SAVE_FOLDER_NAME);
-                        AssetDatabase.SaveAssets();
-                        AssetDatabase.Refresh();
-                    }
-                }
-            }
-
-            if (string.IsNullOrEmpty(saveFolderPath))
-            {
-                var avatarName = targetAvatar.name.Replace(NOBLINK_ASSET_NAME, string.Empty);
-                var animationFolderPath = "Assets/NoBlinkAnimations";
-                if (!Directory.Exists(animationFolderPath))
-                {
-                    AssetDatabase.CreateFolder("Assets", "NoBlinkAnimations");
-                }
-                var avatarFolderPath = animationFolderPath + "/" + avatarName;
-                if (!Directory.Exists(avatarFolderPath))
-                {
-                    AssetDatabase.CreateFolder(animationFolderPath, avatarName);
-                }
-                saveFolderPath = avatarFolderPath;
-            }
         }
 
         /// <summary>
@@ -1083,6 +1050,54 @@ namespace VRCDeveloperTool
                 blendShapeNameList.Add(blendShapeName);
             }
             return blendShapeNameList.ToArray();
+        }
+
+        /// <summary>
+        /// 保存先フォルダパスを取得する
+        /// </summary>
+        /// <param name="controller"></param>
+        /// <returns></returns>
+        private string GetSaveFolderPath(AnimatorOverrideController controller)
+        {
+            var saveFolderPath = string.Empty;
+            if (standingAnimController != null)
+            {
+                var customStandingAnimsPath = AssetDatabase.GetAssetPath(controller);
+                var controllerFolderPath = Path.GetDirectoryName(customStandingAnimsPath);
+
+                if (controllerFolderPath.EndsWith(SAVE_FOLDER_NAME))
+                {
+                    saveFolderPath = controllerFolderPath;
+                }
+                else
+                {
+                    saveFolderPath = controllerFolderPath + "\\" + SAVE_FOLDER_NAME;
+                    if (!Directory.Exists(saveFolderPath))
+                    {
+                        AssetDatabase.CreateFolder(controllerFolderPath, SAVE_FOLDER_NAME);
+                        AssetDatabase.SaveAssets();
+                        AssetDatabase.Refresh();
+                    }
+                }
+            }
+
+            if (string.IsNullOrEmpty(saveFolderPath))
+            {
+                var avatarName = targetAvatar.name.Replace(NOBLINK_ASSET_NAME, string.Empty);
+                var animationFolderPath = "Assets/NoBlinkAnimations";
+                if (!Directory.Exists(animationFolderPath))
+                {
+                    AssetDatabase.CreateFolder("Assets", "NoBlinkAnimations");
+                }
+                var avatarFolderPath = animationFolderPath + "/" + avatarName;
+                if (!Directory.Exists(avatarFolderPath))
+                {
+                    AssetDatabase.CreateFolder(animationFolderPath, avatarName);
+                }
+                saveFolderPath = avatarFolderPath;
+            }
+
+            return saveFolderPath;
         }
     }
 
