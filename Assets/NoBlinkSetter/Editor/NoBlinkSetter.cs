@@ -38,6 +38,11 @@ namespace VRCDeveloperTool
         private string saveFolderPath;
 
         private int afkMinute = 3;
+        private Transform afkConstraintTarget;
+
+        public enum AFK_EFFECT_TYPE {ZZZ, BUBBLE, CUSTOM};
+        private AFK_EFFECT_TYPE afkEffectType = AFK_EFFECT_TYPE.ZZZ;
+        private GameObject customAfkEffect = null;
 
         private const string NOBLINK_ANIMATOR_PATH = "/OriginFiles/blink reset.controller";
         private const string NOBLINK_ANIMATION_PATH = "/OriginFiles/blink reset.anim";
@@ -306,7 +311,48 @@ namespace VRCDeveloperTool
 
                 EditorGUILayout.Space();
 
-                useAfkSystem = EditorGUILayout.ToggleLeft("AFK機構を使う", useAfkSystem);
+                useAfkSystem = EditorGUILayout.ToggleLeft("AFK System", useAfkSystem, EditorStyles.boldLabel);
+
+                if (useAfkSystem)
+                {
+                    using (new EditorGUI.IndentLevelScope())
+                    {
+                        using (new EditorGUILayout.HorizontalScope())
+                        {
+                            afkMinute = EditorGUILayout.IntField("AFKになるまでの時間(分)", afkMinute);
+
+                            if (GUILayout.Button("3分"))
+                            {
+                                afkMinute = 3;
+                            }
+                            if (GUILayout.Button("5分"))
+                            {
+                                afkMinute = 5;
+                            }
+                        }
+
+                        EditorGUILayout.Space();
+
+                        afkEffectType = (AFK_EFFECT_TYPE)EditorGUILayout.EnumPopup("AFK中のエフェクト", afkEffectType);
+
+                        if (afkEffectType == AFK_EFFECT_TYPE.CUSTOM)
+                        {
+                            customAfkEffect = EditorGUILayout.ObjectField(
+                                                "AFK中に表示するObject",
+                                                customAfkEffect,
+                                                typeof(GameObject),
+                                                true) as GameObject;
+
+
+                        }
+
+                        afkConstraintTarget = EditorGUILayout.ObjectField(
+                                                "AFKエフェクトの接続先",
+                                                afkConstraintTarget,
+                                                typeof(Transform),
+                                                true) as Transform;
+                    }
+                }
 
                 EditorGUILayout.Space();
 
