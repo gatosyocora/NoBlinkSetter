@@ -199,7 +199,7 @@ namespace VRCDeveloperTool
                     {
                         var currentIndentLevel = EditorGUI.indentLevel;
                         EditorGUI.indentLevel = 0;
-                        EditorGUILayout.HelpBox("アバターの顔のSkinnedMeshRendererを設定してください", MessageType.Error);
+                        EditorGUILayout.HelpBox("アバターの表情のBlendShapeを持つSkinnedMeshRendererを設定してください", MessageType.Error);
                         EditorGUI.indentLevel = currentIndentLevel;
                     }
 
