@@ -42,7 +42,7 @@ namespace VRCDeveloperTool
 
         public enum AFK_EFFECT_TYPE {ZZZ, BUBBLE, CUSTOM};
         private AFK_EFFECT_TYPE afkEffectType = AFK_EFFECT_TYPE.ZZZ;
-        private GameObject customAfkEffect = null;
+        private GameObject afkEffect = null;
 
         private const string NOBLINK_ANIMATOR_PATH = "/OriginFiles/blink reset.controller";
         private const string NOBLINK_ANIMATION_PATH = "/OriginFiles/blink reset.anim";
@@ -337,9 +337,9 @@ namespace VRCDeveloperTool
 
                         if (afkEffectType == AFK_EFFECT_TYPE.CUSTOM)
                         {
-                            customAfkEffect = EditorGUILayout.ObjectField(
+                            afkEffect = EditorGUILayout.ObjectField(
                                                 "AFK中に表示するObject",
-                                                customAfkEffect,
+                                                afkEffect,
                                                 typeof(GameObject),
                                                 true) as GameObject;
 
@@ -358,7 +358,7 @@ namespace VRCDeveloperTool
 
                 if (GUILayout.Button("Create Afk System Animation"))
                 {
-                    var afkAnim = CreateAfkBlinkAnimation(blinkAnimClip, afkMinute * 60, blinkAnimator, customAfkEffect);
+                    var afkAnim = CreateAfkBlinkAnimation(blinkAnimClip, afkMinute * 60, blinkAnimator, afkEffect);
                     blinkAnimClip = afkAnim;
                     blinkController.layers[0].stateMachine.states[0].state.motion = blinkAnimClip;
                 }
