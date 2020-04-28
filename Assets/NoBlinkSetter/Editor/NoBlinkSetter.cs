@@ -358,14 +358,9 @@ namespace VRCDeveloperTool
 
                 if (GUILayout.Button("Create Afk System Animation"))
                 {
-                    var afkAnim = CreateAfkBlinkAnimation(blinkAnimClip, afkMinute * 60);
-
-                    if (afkAnim != null)
-                    {
-                        AssetDatabase.CreateAsset(afkAnim, "Assets/"+afkAnim.name + ".anim");
-                        AssetDatabase.SaveAssets();
-                        AssetDatabase.Refresh();
-                    }
+                    var afkAnim = CreateAfkBlinkAnimation(blinkAnimClip, afkMinute * 60, blinkAnimator, customAfkEffect);
+                    blinkAnimClip = afkAnim;
+                    blinkController.layers[0].stateMachine.states[0].state.motion = blinkAnimClip;
                 }
 
             }
@@ -834,7 +829,7 @@ namespace VRCDeveloperTool
             return selectedFolderPath;
         }
 
-        private AnimationClip CreateAfkBlinkAnimation(AnimationClip defaultBlinkAnim, float afkTriggerTime)
+        private AnimationClip CreateAfkBlinkAnimation(AnimationClip defaultBlinkAnim, float afkTriggerTime, Animator blinkAnimator, GameObject effectObj)
         {
             if (defaultBlinkAnim == null) return null;
 
@@ -846,7 +841,7 @@ namespace VRCDeveloperTool
 
             foreach (var binding in bindings)
             {
-                // もし表情アニメーションのbindingじゃなかったら
+                // 表情アニメーションのbindingだけ処理する
                 if (binding.type != typeof(SkinnedMeshRenderer)) continue;
 
                 var curve = AnimationUtility.GetEditorCurve(afkAnim, binding);
@@ -856,12 +851,13 @@ namespace VRCDeveloperTool
 
                 int loopCount = 1;
                 bool isFinished = false;
-                while (loopCount < 10)
+                float time = 0f;
+                while (time < 3600f)
                 {
                     for (int keyIndex = 0; keyIndex < keyCountOf1Set; keyIndex++)
                     {
                         var key = curve.keys[keyIndex];
-                        var time = key.time + timeOf1Set * loopCount;
+                        time = key.time + timeOf1Set * loopCount;
 
                         if (time >= afkTriggerTime)
                         {
@@ -869,25 +865,57 @@ namespace VRCDeveloperTool
                             break;
                         }
 
-                        curve.AddKey(time, key.value);
+                        var newKey = new Keyframe();
+                        newKey.time = time;
+                        newKey.value = key.value;
+                        newKey.weightedMode = WeightedMode.Both;
+
+                        curve.AddKey(newKey);
                     }
 
                     if (isFinished) break;
-
                     loopCount++;
                 }
 
-                // 最後のフレームの1f後に目を閉じるキーを入れる
-                var lastKeyTime = curve.keys[curve.length - 1].time;
-                curve.AddKey(lastKeyTime + 1/frameRate, 100f);
+                // AFKに移行する時間の10フレーム前に目をあけるキーを入れる
+                var afkBeforeKey = new Keyframe();
+                afkBeforeKey.time = afkTriggerTime - 10f;
+                afkBeforeKey.value = 0f;
+                afkBeforeKey.weightedMode = WeightedMode.Both;
+                curve.AddKey(afkBeforeKey);
+
+                // AFKに移行する時間に目を閉じるキーを入れる
+                var afkKey = new Keyframe();
+                afkKey.time = afkTriggerTime;
+                afkKey.value = 100f;
+                afkKey.weightedMode = WeightedMode.Both;
+                curve.AddKey(afkKey);
 
                 AnimationUtility.SetEditorCurve(afkAnim, binding, curve);
             }
 
+            // AFKEffectのキーを追加する
+            // 特定のGameObjectを0フレーム目に非アクティブ, 最後のフレームでアクティブ
+            var effectBinding = new EditorCurveBinding();
+            effectBinding.type = typeof(GameObject);
+            var path = GetHierarchyPathFromObj1ToObj2(blinkAnimator.gameObject, effectObj);
+            effectBinding.path = path;
+            effectBinding.propertyName = "m_IsActive";
+            var effectCurve = new AnimationCurve(
+                                    new Keyframe(0f, 0f, 0f, 1f),
+                                    new Keyframe(afkTriggerTime, 1f, float.PositiveInfinity, float.PositiveInfinity));
+            AnimationUtility.SetEditorCurve(afkAnim, effectBinding, effectCurve);
+
             // LoopTimeをfalseにする
-            var serializedObj = new SerializedObject(afkAnim);
-            serializedObj.FindProperty("m_AnimationClipSetting.m_LoopTime").boolValue = false;
-            serializedObj.ApplyModifiedProperties();
+            var serialied = new SerializedObject(afkAnim);
+            var property = serialied.FindProperty("m_AnimationClipSettings.m_LoopTime");
+            property.boolValue = false;
+            serialied.ApplyModifiedProperties();
+
+            var newPath = AssetDatabase.GenerateUniqueAssetPath(saveFolderPath + "\\" + defaultBlinkAnim.name + "_afk" + ".anim");
+            AssetDatabase.CreateAsset(afkAnim, newPath);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
 
             return afkAnim;
         }
