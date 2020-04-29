@@ -1007,6 +1007,27 @@ namespace VRCDeveloperTool
         }
 
         /// <summary>
+        /// AnimatorControllerを複製する
+        /// </summary>
+        /// <param name="controller"></param>
+        /// <param name="newAssetName"></param>
+        /// <param name="saveFolderPath"></param>
+        /// <returns></returns>
+        private AnimatorController DuplicateAnimatorController(AnimatorController controller, string newAssetName, string saveFolderPath)
+        {
+            var sourcePath = AssetDatabase.GetAssetPath(controller);
+            var ext = Path.GetExtension(sourcePath);
+            var newPath = AssetDatabase.GenerateUniqueAssetPath(saveFolderPath + "\\" + newAssetName + ext);
+            AssetDatabase.CopyAsset(sourcePath, newPath);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
+            var newAsset = AssetDatabase.LoadAssetAtPath(newPath, typeof(AnimatorController)) as AnimatorController;
+
+            return newAsset;
+        }
+
+        /// <summary>
         /// まばたきアニメーションが最適か調べて必要であれば設定する
         /// </summary>
         private AnimationClip CheckAndChangeBlinkAnimation(AnimationClip blinkAnimClip)
