@@ -1218,7 +1218,6 @@ namespace VRCDeveloperTool
 
             return saveFolderPath;
         }
-    }
 
         /// <summary>
         /// BlendShapeの名前をIndexに変換する
