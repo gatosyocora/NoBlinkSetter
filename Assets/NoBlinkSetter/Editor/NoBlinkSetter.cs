@@ -1220,4 +1220,31 @@ namespace VRCDeveloperTool
         }
     }
 
+        /// <summary>
+        /// BlendShapeの名前をIndexに変換する
+        /// </summary>
+        /// <param name="blendShapeNames"></param>
+        /// <param name="renderer"></param>
+        /// <returns></returns>
+        private int[] BlendShapeNameToIndex(string[] blendShapeNames, SkinnedMeshRenderer renderer)
+        {
+            var blendShapeIndexList = new List<int>();
+
+            var mesh = renderer.sharedMesh;
+            var blendShapeCount = mesh.blendShapeCount;
+            for (int i = 0; i < blendShapeCount; i++)
+            {
+                var blendShapeName = mesh.GetBlendShapeName(i);
+                if (blendShapeNames.Contains(blendShapeName))
+                {
+                    blendShapeIndexList.Add(i);
+
+                    if (blendShapeIndexList.Count() >= blendShapeNames.Count()) break;
+                }
+            }
+
+            return blendShapeIndexList.ToArray();
+        }
+
+    }
 }
