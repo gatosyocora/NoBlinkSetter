@@ -37,7 +37,7 @@ namespace VRCDeveloperTool
         private string noBlinkSetterFolderPath;
         private string saveFolderPath;
 
-        private int afkMinute = 3;
+        private float afkMinute = 3f;
         private Transform afkConstraintTarget;
 
         public enum AFK_EFFECT_TYPE {ZZZ, BUBBLE, CUSTOM};
@@ -319,15 +319,15 @@ namespace VRCDeveloperTool
                     {
                         using (new EditorGUILayout.HorizontalScope())
                         {
-                            afkMinute = EditorGUILayout.IntField("AFKになるまでの時間(分)", afkMinute);
+                            afkMinute = EditorGUILayout.FloatField("AFKになるまでの時間(分)", afkMinute);
 
                             if (GUILayout.Button("3分"))
                             {
-                                afkMinute = 3;
+                                afkMinute = 3f;
                             }
                             if (GUILayout.Button("5分"))
                             {
-                                afkMinute = 5;
+                                afkMinute = 5f;
                             }
                         }
 
