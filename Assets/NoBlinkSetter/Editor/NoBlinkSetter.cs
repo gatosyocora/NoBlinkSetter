@@ -360,14 +360,6 @@ namespace VRCDeveloperTool
                 }
 
                 EditorGUILayout.Space();
-
-                if (GUILayout.Button("Create Afk System Animation"))
-                {
-                    var afkAnim = CreateAfkBlinkAnimation(blinkAnimClip, afkMinute * 60, blinkAnimator, afkEffect);
-                    blinkAnimClip = afkAnim;
-                    blinkController.layers[0].stateMachine.states[0].state.motion = blinkAnimClip;
-                }
-
             }
 
             if (targetAvatar != null && (blinkController == null || blinkAnimClip == null))
