@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEditor.Animations;
 using System.IO;
+using UnityEngine.Animations;
 
 // ver 1.1
 // © 2019 gatosyocora
@@ -49,6 +50,8 @@ namespace VRCDeveloperTool
         private const string NOBLINK_PREFAB_FOR_EYETRACKING_PATH = "/OriginFiles/Body.prefab";
         private const string BLINK_CONTROLLER_PATH = "/OriginFiles/BlinkController.controller";
         private const string BLINK_ANIMATION_CLIP_PATH = "/OriginFiles/BlinkAnimation.anim";
+        private const string AFK_EFFECT_ZZZ_PATH = "/AFK System/Prefab/Object2.prefab";
+        private const string AFK_EFFECT_BUBBLE_PATH = "/AFK System/Prefab/Object1.prefab";
 
         private const string SAVE_FOLDER_NAME = "NoBlink";
 
@@ -484,6 +487,66 @@ namespace VRCDeveloperTool
             {
                 blinkAnimClip = newBlinkAnimClip;
                 blinkController.layers[0].stateMachine.states[0].state.motion = blinkAnimClip;
+            }
+
+            if (useAfkSystem)
+            {
+                var constraintObj = new GameObject("Constraint");
+                var constraintTrans = constraintObj.transform;
+                constraintTrans.SetParent(faceMesh.transform);
+                constraintTrans.localPosition = Vector3.zero;
+                constraintTrans.localRotation = Quaternion.identity;
+
+                if (afkConstraintTarget != null)
+                {
+                    afkConstraintTarget = GetCorrespondTransformBetweenDuplicatedObjects(obj, objNoBlink, afkConstraintTarget);
+                    constraintTrans.position = afkConstraintTarget.position;
+                    constraintTrans.rotation = afkConstraintTarget.rotation;
+
+                    var constraint = constraintObj.AddComponent<ParentConstraint>();
+                    var source = new ConstraintSource();
+                    source.sourceTransform = afkConstraintTarget;
+                    source.weight = 1f;
+                    constraint.AddSource(source);
+                    constraint.constraintActive = true;
+                }
+
+                if (afkEffectType == AFK_EFFECT_TYPE.ZZZ)
+                {
+                    var prefab = AssetDatabase.LoadAssetAtPath(noBlinkSetterFolderPath + AFK_EFFECT_ZZZ_PATH, typeof(GameObject)) as GameObject;
+                    afkEffect = Instantiate(prefab) as GameObject;
+                }
+                else if (afkEffectType == AFK_EFFECT_TYPE.BUBBLE)
+                {
+                    var prefab = AssetDatabase.LoadAssetAtPath(noBlinkSetterFolderPath + AFK_EFFECT_BUBBLE_PATH, typeof(GameObject)) as GameObject;
+                    afkEffect = Instantiate(prefab) as GameObject;
+                }
+
+                var afkEffectTrans = afkEffect.transform;
+                afkEffectTrans.SetParent(constraintTrans);
+                afkEffectTrans.localPosition = Vector3.zero;
+                afkEffectTrans.localRotation = Quaternion.identity;
+
+                var afkBlinkAnimClip = CreateAfkBlinkAnimation(blinkAnimClip, afkMinute * 60, blinkAnimator, afkEffect);
+
+                if (afkBlinkAnimClip != null)
+                {
+                    blinkController = DuplicateAnimatorController(blinkController, blinkController.name+AFK_ASSET_NAME, saveFolderPath);
+                    blinkAnimator.runtimeAnimatorController = blinkController;
+                    blinkAnimClip = afkBlinkAnimClip;
+                    blinkController.layers[0].stateMachine.states[0].state.motion = blinkAnimClip;
+                }
+
+                var blinkBlendShapeIndices = BlendShapeNameToIndex(blinkBlendShapeNames, faceMesh);
+
+                foreach (int blinkBlendShapeIndex in blinkBlendShapeIndices)
+                {
+                    faceMesh.SetBlendShapeWeight(blinkBlendShapeIndex, 100f);
+                }
+
+                blinkAnimator.enabled = false;
+
+                objNoBlink.name += AFK_ASSET_NAME;
             }
 
             if (duplicateAvatarAnimatorController)
