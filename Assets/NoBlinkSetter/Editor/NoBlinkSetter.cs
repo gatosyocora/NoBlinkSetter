@@ -885,9 +885,10 @@ namespace VRCDeveloperTool
                     loopCount++;
                 }
 
-                // AFKに移行する時間の10フレーム前に目をあけるキーを入れる
+                // AFKに移行する時間の1秒前に目をあけるキーを入れる
+                // 1秒前から徐々に目を閉じていくアニメーションになる
                 var afkBeforeKey = new Keyframe();
-                afkBeforeKey.time = afkTriggerTime - 10f;
+                afkBeforeKey.time = afkTriggerTime - 1f;
                 afkBeforeKey.value = 0f;
                 afkBeforeKey.weightedMode = WeightedMode.Both;
                 curve.AddKey(afkBeforeKey);
