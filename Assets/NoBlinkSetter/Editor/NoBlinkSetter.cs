@@ -829,6 +829,14 @@ namespace VRCDeveloperTool
             return selectedFolderPath;
         }
 
+        /// <summary>
+        /// AFK機構用のまばたきアニメーションを作成する
+        /// </summary>
+        /// <param name="defaultBlinkAnim"></param>
+        /// <param name="afkTriggerTime"></param>
+        /// <param name="blinkAnimator"></param>
+        /// <param name="effectObj"></param>
+        /// <returns></returns>
         private AnimationClip CreateAfkBlinkAnimation(AnimationClip defaultBlinkAnim, float afkTriggerTime, Animator blinkAnimator, GameObject effectObj)
         {
             if (defaultBlinkAnim == null) return null;
