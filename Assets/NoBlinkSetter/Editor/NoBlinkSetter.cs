@@ -1245,5 +1245,18 @@ namespace VRCDeveloperTool
             return blendShapeIndexList.ToArray();
         }
 
+        /// <summary>
+        /// 複製された2つのオブジェクト間で片方の特定のTransformに対応したTransformを取得する
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="duplicated"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        private Transform GetCorrespondTransformBetweenDuplicatedObjects(GameObject source, GameObject duplicated, Transform target)
+        {
+            var path = GetHierarchyPathFromObj1ToObj2(source, target.gameObject);
+
+            return duplicated.transform.Find(path);
+        }
     }
 }
