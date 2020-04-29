@@ -57,6 +57,8 @@ namespace VRCDeveloperTool
 
         private const string NOBLINK_ASSET_NAME = "_blink reset";
 
+        private const string AFK_ASSET_NAME = "_afk";
+
         private readonly string[] FACE_ANIM_NAMES = { "FIST", "FINGERPOINT", "HANDOPEN", "HANDGUN", "THUMBSUP", "VICTORY", "ROCKNROLL" };
 
         [MenuItem("VRCDeveloperTool/NoBlinkSetter")]
@@ -921,7 +923,7 @@ namespace VRCDeveloperTool
             property.boolValue = false;
             serialied.ApplyModifiedProperties();
 
-            var newPath = AssetDatabase.GenerateUniqueAssetPath(saveFolderPath + "\\" + defaultBlinkAnim.name + "_afk" + ".anim");
+            var newPath = AssetDatabase.GenerateUniqueAssetPath(saveFolderPath + "\\" + defaultBlinkAnim.name + AFK_ASSET_NAME + ".anim");
             AssetDatabase.CreateAsset(afkAnim, newPath);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
