@@ -644,6 +644,10 @@ namespace VRCDeveloperTool
             sittingAnimController = avatar.CustomSittingAnims;
 
             hasVRCEyeTracking = IsVRCEyeTrackingAvatar(avatar);
+
+            var avatarAnimator = avatar.gameObject.GetComponent<Animator>();
+            var headTrans = avatarAnimator.GetBoneTransform(HumanBodyBones.Head);
+            afkConstraintTarget = headTrans;
         }
 
         /// <summary>
