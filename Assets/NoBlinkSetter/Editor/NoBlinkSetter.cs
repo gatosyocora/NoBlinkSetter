@@ -520,7 +520,7 @@ namespace VRCDeveloperTool
                 afkEffectTrans.localPosition = Vector3.zero;
                 afkEffectTrans.localRotation = Quaternion.identity;
 
-                var afkBlinkAnimClip = CreateAfkBlinkAnimation(blinkAnimClip, afkMinute * 60, blinkAnimator, afkEffect);
+                var afkBlinkAnimClip = CreateAfkBlinkAnimation(blinkAnimClip, afkMinute * 60, blinkAnimator, afkEffect, blinkBlendShapeNames);
 
                 if (afkBlinkAnimClip != null)
                 {
@@ -899,7 +899,7 @@ namespace VRCDeveloperTool
         /// <param name="blinkAnimator"></param>
         /// <param name="effectObj"></param>
         /// <returns></returns>
-        private AnimationClip CreateAfkBlinkAnimation(AnimationClip defaultBlinkAnim, float afkTriggerTime, Animator blinkAnimator, GameObject effectObj)
+        private AnimationClip CreateAfkBlinkAnimation(AnimationClip defaultBlinkAnim, float afkTriggerTime, Animator blinkAnimator, GameObject effectObj, string[] blinkBlendShapeNames)
         {
             if (defaultBlinkAnim == null) return null;
 
@@ -911,6 +911,8 @@ namespace VRCDeveloperTool
             {
                 // 表情アニメーションのbindingだけ処理する
                 if (binding.type != typeof(SkinnedMeshRenderer)) continue;
+
+                var blendShapeName = binding.propertyName.Replace("blendShape.", string.Empty);
 
                 var curve = AnimationUtility.GetEditorCurve(afkAnim, binding);
 
@@ -947,24 +949,28 @@ namespace VRCDeveloperTool
                     loopCount++;
                 }
 
-                // AFKに移行する時間の1秒前に目をあけるキーを入れる
-                // 1秒前から徐々に目を閉じていくアニメーションになる
-                var afkBeforeKey = new Keyframe
+                // まばたき用のシェイプキーであれば最後に目を閉じる
+                if (blinkBlendShapeNames.Contains(blendShapeName))
                 {
-                    time = afkTriggerTime - 1f,
-                    value = 0f,
-                    weightedMode = WeightedMode.Both
-                };
-                curve.AddKey(afkBeforeKey);
+                    // AFKに移行する時間の1秒前に目をあけるキーを入れる
+                    // 1秒前から徐々に目を閉じていくアニメーションになる
+                    var afkBeforeKey = new Keyframe
+                    {
+                        time = afkTriggerTime - 1f,
+                        value = 0f,
+                        weightedMode = WeightedMode.Both
+                    };
+                    curve.AddKey(afkBeforeKey);
 
-                // AFKに移行する時間に目を閉じるキーを入れる
-                var afkKey = new Keyframe
-                {
-                    time = afkTriggerTime,
-                    value = 100f,
-                    weightedMode = WeightedMode.Both
-                };
-                curve.AddKey(afkKey);
+                    // AFKに移行する時間に目を閉じるキーを入れる
+                    var afkKey = new Keyframe
+                    {
+                        time = afkTriggerTime,
+                        value = 100f,
+                        weightedMode = WeightedMode.Both
+                    };
+                    curve.AddKey(afkKey);
+                }
 
                 AnimationUtility.SetEditorCurve(afkAnim, binding, curve);
             }
