@@ -481,6 +481,7 @@ namespace VRCDeveloperTool
                 blinkController.layers[0].stateMachine.states[0].state.motion = blinkAnimClip;
             }
 
+            // AFK Systemを設定する
             if (useAfkSystem)
             {
                 var constraintObj = new GameObject("Constraint");
