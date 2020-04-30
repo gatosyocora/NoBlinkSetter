@@ -978,14 +978,17 @@ namespace VRCDeveloperTool
 
             // AFKEffectのキーを追加する
             // 特定のGameObjectを0フレーム目に非アクティブ, 最後のフレームでアクティブ
-            var effectBinding = new EditorCurveBinding();
-            effectBinding.type = typeof(GameObject);
             var path = GetHierarchyPathFromObj1ToObj2(blinkAnimator.gameObject, effectObj);
-            effectBinding.path = path;
-            effectBinding.propertyName = "m_IsActive";
+            var effectBinding = new EditorCurveBinding
+            {
+                type = typeof(GameObject),
+                path = path,
+                propertyName = "m_IsActive"
+            };
             var effectCurve = new AnimationCurve(
                                     new Keyframe(0f, 0f, 0f, 1f),
-                                    new Keyframe(afkTriggerTime, 1f, float.PositiveInfinity, float.PositiveInfinity));
+                                    new Keyframe(afkTriggerTime, 1f, float.PositiveInfinity, float.PositiveInfinity)
+                              );
             AnimationUtility.SetEditorCurve(afkAnim, effectBinding, effectCurve);
 
             // LoopTimeをfalseにする
@@ -993,6 +996,7 @@ namespace VRCDeveloperTool
             var property = serialied.FindProperty("m_AnimationClipSettings.m_LoopTime");
             property.boolValue = false;
             serialied.ApplyModifiedProperties();
+            serialied.Dispose();
 
             var newPath = AssetDatabase.GenerateUniqueAssetPath(saveFolderPath + "\\" + defaultBlinkAnim.name + AFK_ASSET_NAME + ".anim");
             AssetDatabase.CreateAsset(afkAnim, newPath);
