@@ -40,6 +40,7 @@ namespace VRCDeveloperTool
 
         private float afkMinute = 3f;
         private Transform afkConstraintTarget;
+        private Transform headTrans;
 
         public enum AFK_EFFECT_TYPE {ZZZ, BUBBLE, CUSTOM};
         private AFK_EFFECT_TYPE afkEffectType = AFK_EFFECT_TYPE.ZZZ;
@@ -517,8 +518,12 @@ namespace VRCDeveloperTool
 
                 var afkEffectTrans = afkEffect.transform;
                 afkEffectTrans.SetParent(constraintTrans);
-                afkEffectTrans.localPosition = Vector3.zero;
-                afkEffectTrans.localRotation = Quaternion.identity;
+
+                if (afkEffectType != AFK_EFFECT_TYPE.CUSTOM)
+                {
+                    afkEffectTrans.localPosition = new Vector3(0, 0.1f, 0.1f);
+                    afkEffectTrans.localRotation = Quaternion.identity;
+                }
 
                 var afkBlinkAnimClip = CreateAfkBlinkAnimation(blinkAnimClip, afkMinute * 60, blinkAnimator, afkEffect, blinkBlendShapeNames);
 
@@ -646,7 +651,7 @@ namespace VRCDeveloperTool
             hasVRCEyeTracking = IsVRCEyeTrackingAvatar(avatar);
 
             var avatarAnimator = avatar.gameObject.GetComponent<Animator>();
-            var headTrans = avatarAnimator.GetBoneTransform(HumanBodyBones.Head);
+            headTrans = avatarAnimator.GetBoneTransform(HumanBodyBones.Head);
             afkConstraintTarget = headTrans;
         }
 
