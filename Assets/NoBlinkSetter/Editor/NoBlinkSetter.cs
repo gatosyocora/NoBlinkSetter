@@ -905,8 +905,6 @@ namespace VRCDeveloperTool
 
             var afkAnim = Instantiate(defaultBlinkAnim) as AnimationClip;
 
-            var frameRate = afkAnim.frameRate;
-
             var bindings = AnimationUtility.GetCurveBindings(afkAnim);
 
             foreach (var binding in bindings)
@@ -935,10 +933,12 @@ namespace VRCDeveloperTool
                             break;
                         }
 
-                        var newKey = new Keyframe();
-                        newKey.time = time;
-                        newKey.value = key.value;
-                        newKey.weightedMode = WeightedMode.Both;
+                        var newKey = new Keyframe
+                        {
+                            time = time,
+                            value = key.value,
+                            weightedMode = WeightedMode.Both
+                        };
 
                         curve.AddKey(newKey);
                     }
@@ -949,17 +949,21 @@ namespace VRCDeveloperTool
 
                 // AFKに移行する時間の1秒前に目をあけるキーを入れる
                 // 1秒前から徐々に目を閉じていくアニメーションになる
-                var afkBeforeKey = new Keyframe();
-                afkBeforeKey.time = afkTriggerTime - 1f;
-                afkBeforeKey.value = 0f;
-                afkBeforeKey.weightedMode = WeightedMode.Both;
+                var afkBeforeKey = new Keyframe
+                {
+                    time = afkTriggerTime - 1f,
+                    value = 0f,
+                    weightedMode = WeightedMode.Both
+                };
                 curve.AddKey(afkBeforeKey);
 
                 // AFKに移行する時間に目を閉じるキーを入れる
-                var afkKey = new Keyframe();
-                afkKey.time = afkTriggerTime;
-                afkKey.value = 100f;
-                afkKey.weightedMode = WeightedMode.Both;
+                var afkKey = new Keyframe
+                {
+                    time = afkTriggerTime,
+                    value = 100f,
+                    weightedMode = WeightedMode.Both
+                };
                 curve.AddKey(afkKey);
 
                 AnimationUtility.SetEditorCurve(afkAnim, binding, curve);
