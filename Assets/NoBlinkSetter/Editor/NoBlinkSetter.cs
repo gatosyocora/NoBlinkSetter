@@ -907,6 +907,8 @@ namespace VRCDeveloperTool
 
             var bindings = AnimationUtility.GetCurveBindings(afkAnim);
 
+            var timeOf1Set = defaultBlinkAnim.length;
+
             foreach (var binding in bindings)
             {
                 // 表情アニメーションのbindingだけ処理する
@@ -916,7 +918,6 @@ namespace VRCDeveloperTool
 
                 var curve = AnimationUtility.GetEditorCurve(afkAnim, binding);
 
-                var timeOf1Set = curve.keys[curve.length - 1].time;
                 var keyCountOf1Set = curve.length;
 
                 int loopCount = 1;
