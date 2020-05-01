@@ -240,9 +240,22 @@ namespace VRCDeveloperTool
                         {
                             if (blinkBlendShapeNames != null)
                             {
-                                foreach (var blinkBlendShapeName in blinkBlendShapeNames)
+                                for (int i = 0; i < blinkBlendShapeNames.Count(); i++)
                                 {
-                                    EditorGUILayout.LabelField(blinkBlendShapeName);
+                                    using (new EditorGUILayout.HorizontalScope())
+                                    {
+                                        EditorGUILayout.LabelField(blinkBlendShapeNames[i]);
+
+                                        if (GUILayout.Button("x"))
+                                        {
+                                            blinkBlendShapeNames.RemoveAt(i);
+                                        }
+                                    }
+                                }
+
+                                if (blinkBlendShapeNames.Count() >= 2)
+                                {
+                                    EditorGUILayout.HelpBox("まばたき用BlendShapeが表示されている場合はxを押して削除してください", MessageType.Warning);
                                 }
                             }
                             else if (blinkBlendShapeIndices != null)
