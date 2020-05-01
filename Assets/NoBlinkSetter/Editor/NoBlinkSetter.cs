@@ -474,9 +474,10 @@ namespace VRCDeveloperTool
             }
 
             // まばたきアニメーションを最適化する
-            var newBlinkAnimClip = CheckAndChangeBlinkAnimation(blinkAnimClip);
+            AnimationClip newBlinkAnimClip;
+            var createdNewBlinkAnimation = CheckAndChangeBlinkAnimation(blinkAnimClip, out newBlinkAnimClip);
 
-            if (newBlinkAnimClip != null)
+            if (createdNewBlinkAnimation)
             {
                 blinkAnimClip = newBlinkAnimClip;
                 blinkController.layers[0].stateMachine.states[0].state.motion = blinkAnimClip;
@@ -525,7 +526,7 @@ namespace VRCDeveloperTool
                     afkEffectTrans.localRotation = Quaternion.identity;
                 }
 
-                var afkBlinkAnimClip = CreateAfkBlinkAnimation(blinkAnimClip, afkMinute * 60, blinkAnimator, afkEffect, blinkBlendShapeNames);
+                var afkBlinkAnimClip = CreateAfkBlinkAnimation(blinkAnimClip, afkMinute * 60, blinkAnimator, afkEffect, blinkBlendShapeNames, !createdNewBlinkAnimation);
 
                 if (afkBlinkAnimClip != null)
                 {
@@ -904,11 +905,29 @@ namespace VRCDeveloperTool
         /// <param name="blinkAnimator"></param>
         /// <param name="effectObj"></param>
         /// <returns></returns>
-        private AnimationClip CreateAfkBlinkAnimation(AnimationClip defaultBlinkAnim, float afkTriggerTime, Animator blinkAnimator, GameObject effectObj, string[] blinkBlendShapeNames)
+        private AnimationClip CreateAfkBlinkAnimation(AnimationClip defaultBlinkAnim, float afkTriggerTime, Animator blinkAnimator, GameObject effectObj, string[] blinkBlendShapeNames, bool duplicateAnimationClip)
         {
             if (defaultBlinkAnim == null) return null;
 
-            var afkAnim = Instantiate(defaultBlinkAnim) as AnimationClip;
+            AnimationClip afkAnim;
+            string fileName = defaultBlinkAnim.name + AFK_ASSET_NAME;
+            if (duplicateAnimationClip)
+            {
+                afkAnim = DuplicateAnimationClip(defaultBlinkAnim, fileName, saveFolderPath);
+            }
+            else
+            {
+                afkAnim = defaultBlinkAnim;
+                afkAnim.name += AFK_ASSET_NAME;
+                var defaultPath = AssetDatabase.GetAssetPath(defaultBlinkAnim);
+                // RenameAssetの際に存在するファイルだとRenameできないのでUniqueな名前を取得する
+                var newAnimPath = AssetDatabase.GenerateUniqueAssetPath(Path.GetDirectoryName(defaultPath)+ "\\" + fileName + ".anim");
+                fileName = Path.GetFileNameWithoutExtension(newAnimPath);
+                AssetDatabase.RenameAsset(defaultPath, fileName);
+                afkAnim = AssetDatabase.LoadAssetAtPath<AnimationClip>(newAnimPath) as AnimationClip;
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
+            }
 
             var bindings = AnimationUtility.GetCurveBindings(afkAnim);
 
@@ -1003,8 +1022,6 @@ namespace VRCDeveloperTool
             serialied.ApplyModifiedProperties();
             serialied.Dispose();
 
-            var newPath = AssetDatabase.GenerateUniqueAssetPath(saveFolderPath + "\\" + defaultBlinkAnim.name + AFK_ASSET_NAME + ".anim");
-            AssetDatabase.CreateAsset(afkAnim, newPath);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
@@ -1121,7 +1138,7 @@ namespace VRCDeveloperTool
         /// <summary>
         /// まばたきアニメーションが最適か調べて必要であれば設定する
         /// </summary>
-        private AnimationClip CheckAndChangeBlinkAnimation(AnimationClip blinkAnimClip)
+        private bool CheckAndChangeBlinkAnimation(AnimationClip blinkAnimClip, out AnimationClip newBlinkAnimClip)
         {
             var blinkBindings = AnimationUtility.GetCurveBindings(blinkAnimClip)
                                     .Where(x => x.type == typeof(SkinnedMeshRenderer));
@@ -1152,7 +1169,7 @@ namespace VRCDeveloperTool
             if (needShiftAnimationKeys)
             {
                 var fileName = blinkAnimClip.name + NOBLINK_ASSET_NAME;
-                var newBlinkAnimClip = DuplicateAnimationClip(blinkAnimClip, fileName, saveFolderPath);
+                newBlinkAnimClip = DuplicateAnimationClip(blinkAnimClip, fileName, saveFolderPath);
 
                 blinkBindings = AnimationUtility.GetCurveBindings(newBlinkAnimClip)
                                     .Where(x => x.type == typeof(SkinnedMeshRenderer));
@@ -1174,11 +1191,12 @@ namespace VRCDeveloperTool
                     AnimationUtility.SetEditorCurve(newBlinkAnimClip, binding, curve);
                 }
 
-                return newBlinkAnimClip;
+                return true;
             }
             else
             {
-                return null;
+                newBlinkAnimClip = null;
+                return false;
             }
         }
 
