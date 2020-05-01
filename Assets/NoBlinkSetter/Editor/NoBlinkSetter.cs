@@ -23,7 +23,7 @@ namespace VRCDeveloperTool
         private SkinnedMeshRenderer faceRenderer = null;
         private string[] blendShapeNames = null;
         private List<int> blinkBlendShapeIndices = null;
-        private string[] blinkBlendShapeNames = null;
+        private List<string> blinkBlendShapeNames = null;
         private Animator blinkAnimator = null;
         private AnimatorController blinkController = null;
         private AnimationClip blinkAnimClip = null;
@@ -912,7 +912,7 @@ namespace VRCDeveloperTool
         /// <param name="blinkAnimator"></param>
         /// <param name="effectObj"></param>
         /// <returns></returns>
-        private AnimationClip CreateAfkBlinkAnimation(AnimationClip defaultBlinkAnim, float afkTriggerTime, Animator blinkAnimator, GameObject effectObj, string[] blinkBlendShapeNames, bool duplicateAnimationClip)
+        private AnimationClip CreateAfkBlinkAnimation(AnimationClip defaultBlinkAnim, float afkTriggerTime, Animator blinkAnimator, GameObject effectObj, List<string> blinkBlendShapeNames, bool duplicateAnimationClip)
         {
             if (defaultBlinkAnim == null) return null;
 
@@ -1074,7 +1074,7 @@ namespace VRCDeveloperTool
         /// </summary>
         /// <param name="blinkClip"></param>
         /// <returns></returns>
-        private string[] GetBlinkBlendShapeNames(AnimationClip blinkAnimClip)
+        private List<string> GetBlinkBlendShapeNames(AnimationClip blinkAnimClip)
         {
             if (blinkAnimClip == null) return null;
 
@@ -1083,7 +1083,7 @@ namespace VRCDeveloperTool
             var blinkBlendShapeNames = bindings
                                         .Where(x => x.type == typeof(SkinnedMeshRenderer))
                                         .Select(x => x.propertyName.Replace("blendShape.", string.Empty))
-                                        .ToArray();
+                                        .ToList();
 
             return blinkBlendShapeNames;
         }
@@ -1219,16 +1219,16 @@ namespace VRCDeveloperTool
         /// <param name="blendShapeNames"></param>
         private void SetBlinkAnimation(string avatarName, SkinnedMeshRenderer faceRenderer, List<int> blinkBlendShapeIndexList, string[] blendShapeNames)
         {
-            blinkBlendShapeNames = new string[blinkBlendShapeIndexList.Count()];
+            blinkBlendShapeNames = new List<string>();
 
             if (!string.IsNullOrEmpty(avatarName))
             {
                 avatarName = "_" + avatarName;
             }
 
-            for (int i = 0; i < blinkBlendShapeNames.Length; i++)
+            for (int i = 0; i < blinkBlendShapeIndexList.Count(); i++)
             {
-                blinkBlendShapeNames[i] = blendShapeNames[blinkBlendShapeIndexList[i]];
+                blinkBlendShapeNames.Add(blendShapeNames[blinkBlendShapeIndexList[i]]);
             }
 
             if (blinkAnimator == null)
@@ -1345,7 +1345,7 @@ namespace VRCDeveloperTool
         /// <param name="blendShapeNames"></param>
         /// <param name="renderer"></param>
         /// <returns></returns>
-        private int[] BlendShapeNameToIndex(string[] blendShapeNames, SkinnedMeshRenderer renderer)
+        private int[] BlendShapeNameToIndex(List<string> blendShapeNames, SkinnedMeshRenderer renderer)
         {
             var blendShapeIndexList = new List<int>();
 
