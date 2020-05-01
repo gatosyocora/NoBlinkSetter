@@ -526,6 +526,8 @@ namespace VRCDeveloperTool
                     afkEffectTrans.localRotation = Quaternion.identity;
                 }
 
+                // まばたきアニメーションの最適化でまばたきアニメーションのAnimationClipを複製しているなら、
+                // まばたきアニメーションのAnimationClipを再度複製せずに上書きするようにする(duplicateAnimationClipで設定)
                 var afkBlinkAnimClip = CreateAfkBlinkAnimation(blinkAnimClip, afkMinute * 60, blinkAnimator, afkEffect, blinkBlendShapeNames, !createdNewBlinkAnimation);
 
                 if (afkBlinkAnimClip != null)
