@@ -238,7 +238,7 @@ namespace VRCDeveloperTool
                         }
                         using (new EditorGUI.IndentLevelScope())
                         {
-                            if (blinkBlendShapeNames != null)
+                            if (blinkBlendShapeNames != null && blinkBlendShapeNames.Count > 0)
                             {
                                 for (int i = 0; i < blinkBlendShapeNames.Count(); i++)
                                 {
