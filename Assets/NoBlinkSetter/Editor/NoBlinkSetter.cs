@@ -516,6 +516,11 @@ namespace VRCDeveloperTool
                     var prefab = AssetDatabase.LoadAssetAtPath(noBlinkSetterFolderPath + AFK_EFFECT_BUBBLE_PATH, typeof(GameObject)) as GameObject;
                     afkEffect = Instantiate(prefab) as GameObject;
                 }
+                else
+                {
+                    var duplicatedAfkEffect = GetCorrespondTransformBetweenDuplicatedObjects(obj, objNoBlink, afkEffect.transform);
+                    afkEffect = duplicatedAfkEffect.gameObject;
+                }
 
                 var afkEffectTrans = afkEffect.transform;
                 afkEffectTrans.SetParent(constraintTrans);
