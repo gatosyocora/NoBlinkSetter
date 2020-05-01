@@ -396,7 +396,9 @@ namespace VRCDeveloperTool
                 targetAvatar == null || 
                 faceRenderer == null || 
                 blinkController == null || 
-                blinkAnimClip == null);
+                blinkAnimClip == null ||
+                blinkBlendShapeNames == null ||
+                blinkBlendShapeNames.Count() == 0);
             {
                 using (new EditorGUILayout.HorizontalScope())
                 {
