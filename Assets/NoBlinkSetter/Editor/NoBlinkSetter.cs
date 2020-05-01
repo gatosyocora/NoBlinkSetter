@@ -246,7 +246,7 @@ namespace VRCDeveloperTool
                                     {
                                         EditorGUILayout.LabelField(blinkBlendShapeNames[i]);
 
-                                        if (GUILayout.Button("x"))
+                                        if (GUILayout.Button("x", GUILayout.Width(30f)))
                                         {
                                             blinkBlendShapeNames.RemoveAt(i);
                                         }
