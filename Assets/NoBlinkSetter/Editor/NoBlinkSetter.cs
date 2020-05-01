@@ -981,13 +981,17 @@ namespace VRCDeveloperTool
                 {
                     // AFKに移行する時間の1秒前に目をあけるキーを入れる
                     // 1秒前から徐々に目を閉じていくアニメーションになる
-                    var afkBeforeKey = new Keyframe
+                    // 1秒以内に変化させるキーがあればこれは追加しない
+                    if (curve.keys.Last().time < afkTriggerTime - 1)
                     {
-                        time = afkTriggerTime - 1f,
-                        value = 0f,
-                        weightedMode = WeightedMode.Both
-                    };
-                    curve.AddKey(afkBeforeKey);
+                        var afkBeforeKey = new Keyframe
+                        {
+                            time = afkTriggerTime - 1f,
+                            value = 0f,
+                            weightedMode = WeightedMode.Both
+                        };
+                        curve.AddKey(afkBeforeKey);
+                    }
 
                     // AFKに移行する時間に目を閉じるキーを入れる
                     var afkKey = new Keyframe
