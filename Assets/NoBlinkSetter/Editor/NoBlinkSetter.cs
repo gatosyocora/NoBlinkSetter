@@ -256,7 +256,7 @@ namespace VRCDeveloperTool
 
                                 if (blinkBlendShapeIndices.Count() >= 2)
                                 {
-                                    EditorGUILayout.HelpBox("まばたき用BlendShapeが表示されている場合はxを押して削除してください", MessageType.Warning);
+                                    EditorGUILayout.HelpBox("まばたき用BlendShape以外が表示されている場合はxを押して削除してください", MessageType.Warning);
                                 }
 
                                 if (blinkController == null || blinkAnimClip == null)
