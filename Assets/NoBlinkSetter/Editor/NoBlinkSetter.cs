@@ -557,7 +557,7 @@ namespace VRCDeveloperTool
 
                 if (afkBlinkAnimClip != null)
                 {
-                    blinkController = DuplicateAnimatorController(blinkController, blinkController.name+AFK_ASSET_NAME, saveFolderPath);
+                    blinkController = DuplicateAsset<AnimatorController>(blinkController, blinkController.name+AFK_ASSET_NAME, saveFolderPath);
                     blinkAnimator.runtimeAnimatorController = blinkController;
                     blinkAnimClip = afkBlinkAnimClip;
                     blinkController.layers[0].stateMachine.states[0].state.motion = blinkAnimClip;
@@ -576,7 +576,7 @@ namespace VRCDeveloperTool
             if (duplicateAvatarAnimatorController)
             {
                 var fileName = standingAnimController.name + NOBLINK_ASSET_NAME;
-                var animController = DuplicateAnimatorOverrideController(standingAnimController, fileName, saveFolderPath);
+                var animController = DuplicateAsset<AnimatorOverrideController>(standingAnimController, fileName, saveFolderPath);
                 noBlinkAvatar.CustomStandingAnims = animController;
                 standingAnimController = animController;
             }
@@ -940,7 +940,7 @@ namespace VRCDeveloperTool
             string fileName = defaultBlinkAnim.name + AFK_ASSET_NAME;
             if (duplicateAnimationClip)
             {
-                afkAnim = DuplicateAnimationClip(defaultBlinkAnim, fileName, saveFolderPath);
+                afkAnim = DuplicateAsset<AnimationClip>(defaultBlinkAnim, fileName, saveFolderPath);
             }
             else
             {
@@ -1109,54 +1109,16 @@ namespace VRCDeveloperTool
         }
 
         /// <summary>
-        /// AnimatorOverrideControllerを複製する
+        /// 任意のアセットを複製する
         /// </summary>
-        /// <param name="controller"></param>
-        /// <returns></returns>
-        private AnimatorOverrideController DuplicateAnimatorOverrideController(AnimatorOverrideController controller, string fileName, string saveFolderPath)
-        {
-            var originalPath = AssetDatabase.GetAssetPath(controller);
-            var ext = Path.GetExtension(originalPath);
-            GatoEditorUtility.CreateNoExistFolders(saveFolderPath);
-            var newPath = AssetDatabase.GenerateUniqueAssetPath(saveFolderPath + "\\" + fileName + ext);
-            AssetDatabase.CopyAsset(originalPath, newPath);
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-
-            var newController = AssetDatabase.LoadAssetAtPath(newPath, typeof(AnimatorOverrideController)) as AnimatorOverrideController;
-
-            return newController;
-        }
-
-        /// <summary>
-        /// AnimationClipを複製する
-        /// </summary>
-        /// <param name="animClip"></param>
-        /// <returns></returns>
-        private AnimationClip DuplicateAnimationClip(AnimationClip animClip, string fileName, string saveFolderPath)
-        {
-            var originPath = AssetDatabase.GetAssetPath(animClip);
-            var ext = Path.GetExtension(originPath);
-            GatoEditorUtility.CreateNoExistFolders(saveFolderPath);
-            var newPath = AssetDatabase.GenerateUniqueAssetPath(saveFolderPath + "\\" + fileName + ext);
-            AssetDatabase.CopyAsset(originPath, newPath);
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-
-            var newAnimClip = AssetDatabase.LoadAssetAtPath(newPath, typeof(AnimationClip)) as AnimationClip;
-            return newAnimClip;
-        }
-
-        /// <summary>
-        /// AnimatorControllerを複製する
-        /// </summary>
-        /// <param name="controller"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source"></param>
         /// <param name="newAssetName"></param>
         /// <param name="saveFolderPath"></param>
         /// <returns></returns>
-        private AnimatorController DuplicateAnimatorController(AnimatorController controller, string newAssetName, string saveFolderPath)
+        private T DuplicateAsset<T>(T source, string newAssetName, string saveFolderPath) where T : Object
         {
-            var sourcePath = AssetDatabase.GetAssetPath(controller);
+            var sourcePath = AssetDatabase.GetAssetPath(source);
             var ext = Path.GetExtension(sourcePath);
             GatoEditorUtility.CreateNoExistFolders(saveFolderPath);
             var newPath = AssetDatabase.GenerateUniqueAssetPath(saveFolderPath + "\\" + newAssetName + ext);
@@ -1164,7 +1126,7 @@ namespace VRCDeveloperTool
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            var newAsset = AssetDatabase.LoadAssetAtPath(newPath, typeof(AnimatorController)) as AnimatorController;
+            var newAsset = AssetDatabase.LoadAssetAtPath(newPath, source.GetType()) as T;
 
             return newAsset;
         }
@@ -1203,7 +1165,7 @@ namespace VRCDeveloperTool
             if (needShiftAnimationKeys)
             {
                 var fileName = blinkAnimClip.name + NOBLINK_ASSET_NAME;
-                newBlinkAnimClip = DuplicateAnimationClip(blinkAnimClip, fileName, saveFolderPath);
+                newBlinkAnimClip = DuplicateAsset<AnimationClip>(blinkAnimClip, fileName, saveFolderPath);
 
                 blinkBindings = AnimationUtility.GetCurveBindings(newBlinkAnimClip)
                                     .Where(x => x.type == typeof(SkinnedMeshRenderer));
