@@ -23,7 +23,6 @@ namespace VRCDeveloperTool
         private SkinnedMeshRenderer faceRenderer = null;
         private string[] blendShapeNames = null;
         private List<int> blinkBlendShapeIndices = null;
-        private List<string> blinkBlendShapeNames = null;
         private Animator blinkAnimator = null;
         private AnimatorController blinkController = null;
         private AnimationClip blinkAnimClip = null;
@@ -220,52 +219,45 @@ namespace VRCDeveloperTool
                         {
                             EditorGUILayout.LabelField("BlendShape");
 
-                            if (blinkBlendShapeNames == null)
+                            GUILayout.FlexibleSpace();
+                            if (GUILayout.Button("+"))
                             {
-                                GUILayout.FlexibleSpace();
-                                if (GUILayout.Button("+"))
+                                blinkBlendShapeIndices.Add(-1);
+                            }
+                            if (GUILayout.Button("-"))
+                            {
+                                if (blinkBlendShapeIndices.Count > 1)
                                 {
-                                    blinkBlendShapeIndices.Add(-1);
-                                }
-                                if (GUILayout.Button("-"))
-                                {
-                                    if (blinkBlendShapeIndices.Count > 1)
-                                    {
-                                        blinkBlendShapeIndices.RemoveAt(blinkBlendShapeIndices.Count - 1);
-                                    }
+                                    blinkBlendShapeIndices.RemoveAt(blinkBlendShapeIndices.Count - 1);
                                 }
                             }
                         }
                         using (new EditorGUI.IndentLevelScope())
                         {
-                            if (blinkBlendShapeNames != null && blinkBlendShapeNames.Count > 0)
-                            {
-                                for (int i = 0; i < blinkBlendShapeNames.Count(); i++)
-                                {
-                                    using (new EditorGUILayout.HorizontalScope())
-                                    {
-                                        EditorGUILayout.LabelField(blinkBlendShapeNames[i]);
-
-                                        if (GUILayout.Button("x", GUILayout.Width(30f)))
-                                        {
-                                            blinkBlendShapeNames.RemoveAt(i);
-                                        }
-                                    }
-                                }
-
-                                if (blinkBlendShapeNames.Count() >= 2)
-                                {
-                                    EditorGUILayout.HelpBox("まばたき用BlendShapeが表示されている場合はxを押して削除してください", MessageType.Warning);
-                                }
-                            }
-                            else if (blinkBlendShapeIndices != null)
+                            if (blinkBlendShapeIndices != null)
                             {
                                 for (int i = 0; i < blinkBlendShapeIndices.Count; i++)
                                 {
-                                    blinkBlendShapeIndices[i] = EditorGUILayout.Popup(i + 1 + string.Empty, blinkBlendShapeIndices[i], blendShapeNames);
+                                    using (new EditorGUILayout.HorizontalScope())
+                                    {
+                                        blinkBlendShapeIndices[i] = EditorGUILayout.Popup(i + 1 + string.Empty, blinkBlendShapeIndices[i], blendShapeNames);
+
+                                        if (GUILayout.Button("x", GUILayout.Width(30f)))
+                                        {
+                                            if (blinkBlendShapeIndices.Count() > 1)
+                                            {
+                                                blinkBlendShapeIndices.RemoveAt(i);
+                                            }
+                                        }
+                                    }
                                 }
                                 var currentIndentLevel = EditorGUI.indentLevel;
                                 EditorGUI.indentLevel = 0;
+
+                                if (blinkBlendShapeIndices.Count() >= 2)
+                                {
+                                    EditorGUILayout.HelpBox("まばたき用BlendShapeが表示されている場合はxを押して削除してください", MessageType.Warning);
+                                }
 
                                 if (blinkController == null || blinkAnimClip == null)
                                 {
@@ -280,7 +272,7 @@ namespace VRCDeveloperTool
                                 {
                                     if (GUILayout.Button("BlinkAnimationからBlinkBlendShapeを自動取得"))
                                     {
-                                        blinkBlendShapeNames = GetBlinkBlendShapeNames(blinkAnimClip);
+                                        blinkBlendShapeIndices = GetBlinkBlendShapeIndices(blinkAnimClip, faceRenderer);
                                     }
                                 }
 
@@ -314,7 +306,7 @@ namespace VRCDeveloperTool
                         {
                             if (blinkAnimClip != null)
                             {
-                                blinkBlendShapeNames = GetBlinkBlendShapeNames(blinkAnimClip);
+                                blinkBlendShapeIndices = GetBlinkBlendShapeIndices(blinkAnimClip, faceRenderer);
                             }
                         }
                     }
@@ -395,7 +387,7 @@ namespace VRCDeveloperTool
                 {
                     if (GUILayout.Button("まばたきアニメーションを自動作成する"))
                     {
-                        SetBlinkAnimation(targetAvatar.name, faceRenderer, blinkBlendShapeIndices, blendShapeNames);
+                        SetBlinkAnimation(targetAvatar.name, faceRenderer, blinkBlendShapeIndices);
                     }
                 }
                 EditorGUI.EndDisabledGroup();
@@ -407,8 +399,8 @@ namespace VRCDeveloperTool
                 faceRenderer == null || 
                 blinkController == null || 
                 blinkAnimClip == null ||
-                blinkBlendShapeNames == null ||
-                blinkBlendShapeNames.Count() == 0);
+                blinkBlendShapeIndices == null ||
+                blinkBlendShapeIndices.Select(x => x == -1).Any());
             {
                 using (new EditorGUILayout.HorizontalScope())
                 {
@@ -558,6 +550,7 @@ namespace VRCDeveloperTool
 
                 // まばたきアニメーションの最適化でまばたきアニメーションのAnimationClipを複製しているなら、
                 // まばたきアニメーションのAnimationClipを再度複製せずに上書きするようにする(duplicateAnimationClipで設定)
+                var blinkBlendShapeNames = blinkBlendShapeIndices.Select(x => blendShapeNames[x]).ToList();
                 var afkBlinkAnimClip = CreateAfkBlinkAnimation(blinkAnimClip, afkMinute * 60, blinkAnimator, afkEffect, blinkBlendShapeNames, !createdNewBlinkAnimation);
 
                 if (afkBlinkAnimClip != null)
@@ -567,8 +560,6 @@ namespace VRCDeveloperTool
                     blinkAnimClip = afkBlinkAnimClip;
                     blinkController.layers[0].stateMachine.states[0].state.motion = blinkAnimClip;
                 }
-
-                var blinkBlendShapeIndices = BlendShapeNameToIndex(blinkBlendShapeNames, faceMesh);
 
                 foreach (int blinkBlendShapeIndex in blinkBlendShapeIndices)
                 {
@@ -669,7 +660,7 @@ namespace VRCDeveloperTool
                 }
 
                 // まばたきシェイプキーを取得
-                blinkBlendShapeNames = GetBlinkBlendShapeNames(blinkAnimClip);
+                blinkBlendShapeIndices = GetBlinkBlendShapeIndices(blinkAnimClip, faceRenderer);
 
                 // BlendShapeの一覧を取得
                 blendShapeNames = GetBlendShapeNames(faceRenderer);
@@ -792,6 +783,8 @@ namespace VRCDeveloperTool
 
                 fileName = animClip_origin.name + NOBLINK_ASSET_NAME;
                 animClip = Object.Instantiate(animClip_origin);
+
+                var blinkBlendShapeNames = BlendShapeIndicesToName(blinkBlendShapeIndices, faceRenderer);
 
                 // AnimationClipのBindingすべてに対して
                 foreach (var binding in AnimationUtility.GetCurveBindings(animClip).ToArray())
@@ -1242,18 +1235,13 @@ namespace VRCDeveloperTool
         /// <param name="faceRenderer"></param>
         /// <param name="blinkBlendShapeIndexList"></param>
         /// <param name="blendShapeNames"></param>
-        private void SetBlinkAnimation(string avatarName, SkinnedMeshRenderer faceRenderer, List<int> blinkBlendShapeIndexList, string[] blendShapeNames)
+        private void SetBlinkAnimation(string avatarName, SkinnedMeshRenderer faceRenderer, List<int> blinkBlendShapeIndexList)
         {
-            blinkBlendShapeNames = new List<string>();
+            var blinkBlendShapeNames = BlendShapeIndicesToName(blinkBlendShapeIndexList, faceRenderer);
 
             if (!string.IsNullOrEmpty(avatarName))
             {
                 avatarName = "_" + avatarName;
-            }
-
-            for (int i = 0; i < blinkBlendShapeIndexList.Count(); i++)
-            {
-                blinkBlendShapeNames.Add(blendShapeNames[blinkBlendShapeIndexList[i]]);
             }
 
             if (blinkAnimator == null)
@@ -1391,6 +1379,26 @@ namespace VRCDeveloperTool
         }
 
         /// <summary>
+        /// BlendShapeのIndexを名前に変換する
+        /// </summary>
+        /// <param name="blendShapeIndices"></param>
+        /// <param name="renderer"></param>
+        /// <returns></returns>
+        private List<string> BlendShapeIndicesToName(List<int> blendShapeIndices, SkinnedMeshRenderer renderer)
+        {
+            var blendShapeNameList = new List<string>();
+
+            var mesh = renderer.sharedMesh;
+
+            foreach(var blendShapeIndex in blendShapeIndices)
+            {
+                blendShapeNameList.Add(mesh.GetBlendShapeName(blendShapeIndex));
+            }
+
+            return blendShapeNameList;
+        }
+
+        /// <summary>
         /// 複製された2つのオブジェクト間で片方の特定のTransformに対応したTransformを取得する
         /// </summary>
         /// <param name="source"></param>
@@ -1402,6 +1410,15 @@ namespace VRCDeveloperTool
             var path = GetHierarchyPathFromObj1ToObj2(source, target.gameObject);
 
             return duplicated.transform.Find(path);
+        }
+
+        private List<int> GetBlinkBlendShapeIndices(AnimationClip blinkAnimClip, SkinnedMeshRenderer faceRenderer)
+        {
+            if (blinkAnimClip == null || faceRenderer == null) return null;
+
+            var blinkBlendShapeNames = GetBlinkBlendShapeNames(blinkAnimClip);
+            var blinkBlendShapeIndices = BlendShapeNameToIndex(blinkBlendShapeNames, faceRenderer).ToList();
+            return blinkBlendShapeIndices;
         }
     }
 }
