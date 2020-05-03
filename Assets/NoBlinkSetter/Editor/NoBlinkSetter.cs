@@ -689,6 +689,7 @@ namespace VRCDeveloperTool
         /// <returns></returns>
         private AnimatorController CreateNoBlinkAnimatorController(string fileName, string folderPath)
         {
+            GatoEditorUtility.CreateNoExistFolders(saveFolderPath);
             var new_assetsPath = AssetDatabase.GenerateUniqueAssetPath(saveFolderPath +"\\"+ fileName + ".controller");
             AssetDatabase.CopyAsset(folderPath + NOBLINK_ANIMATOR_PATH, new_assetsPath);
             var noBlinkAnimatorController_new = AssetDatabase.LoadAssetAtPath<AnimatorController>(new_assetsPath);
@@ -703,6 +704,7 @@ namespace VRCDeveloperTool
         /// <returns></returns>
         private AnimationClip CreateNoBlinkAnimationClip(string fileName, string folderPath)
         {
+            GatoEditorUtility.CreateNoExistFolders(saveFolderPath);
             var new_assetsPath = AssetDatabase.GenerateUniqueAssetPath(saveFolderPath + "\\" + fileName + ".anim");
             AssetDatabase.CopyAsset(folderPath + NOBLINK_ANIMATION_PATH, new_assetsPath);
 
@@ -840,6 +842,7 @@ namespace VRCDeveloperTool
                 if (containForBlendShape)
                 {
                     // ファイルを複製
+                    GatoEditorUtility.CreateNoExistFolders(saveFolderPath);
                     AssetDatabase.CreateAsset(animClip, AssetDatabase.GenerateUniqueAssetPath(saveFolderPath + "/" +fileName + ".anim"));
                     AssetDatabase.SaveAssets();
                     AssetDatabase.Refresh();
