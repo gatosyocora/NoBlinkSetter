@@ -207,10 +207,7 @@ namespace VRCDeveloperTool
                     // FaceMesh未設定時の警告表示
                     if (faceRenderer == null)
                     {
-                        var currentIndentLevel = EditorGUI.indentLevel;
-                        EditorGUI.indentLevel = 0;
-                        EditorGUILayout.HelpBox("アバターの表情のBlendShapeを持つSkinnedMeshRendererを設定してください", MessageType.Error);
-                        EditorGUI.indentLevel = currentIndentLevel;
+                        GatoEditorUtility.NonIndentHelpBox("アバターの表情のBlendShapeを持つSkinnedMeshRendererを設定してください", MessageType.Error);
                     }
 
                     if (faceRenderer != null)
@@ -253,34 +250,35 @@ namespace VRCDeveloperTool
                                         }
                                     }
                                 }
-                                var currentIndentLevel = EditorGUI.indentLevel;
-                                EditorGUI.indentLevel = 0;
 
                                 if (blinkBlendShapeIndices.Count() >= 2)
                                 {
-                                    EditorGUILayout.HelpBox("まばたき用BlendShape以外が表示されている場合はxを押して削除してください", MessageType.Warning);
+                                    GatoEditorUtility.NonIndentHelpBox(
+                                        "まばたき用BlendShape以外が表示されている場合はxを押して削除してください", 
+                                        MessageType.Warning);
                                 }
 
                                 if (blinkController == null || blinkAnimClip == null)
                                 {
-                                    EditorGUILayout.HelpBox("まばたきアニメーションを自動作成するためには\nまばたき用のBlendShapeを選択してください", MessageType.Error);
+                                    GatoEditorUtility.NonIndentHelpBox(
+                                        "まばたきアニメーションを自動作成するためには\nまばたき用のBlendShapeを選択してください", 
+                                        MessageType.Error);
                                 }
                                 else if (blinkBlendShapeIndices.All(x => x == -1))
                                 {
-                                    EditorGUILayout.HelpBox("まばたき用BlendShapeが見つかりませんでした\nFaceMesh, BlinkController, BlinkAnimationが正しく設定されていることを確認してください", MessageType.Error);
+                                    GatoEditorUtility.NonIndentHelpBox(
+                                        "まばたき用BlendShapeが見つかりませんでした\nFaceMesh, BlinkController, BlinkAnimationが正しく設定されていることを確認してください", 
+                                        MessageType.Error);
                                 }
 
                                 using (new EditorGUI.DisabledGroupScope(blinkAnimClip == null))
                                 {
-                                    if (GUILayout.Button("BlinkAnimationからBlinkBlendShapeを自動取得"))
-                                    {
-                                        blinkBlendShapeIndices = GetBlinkBlendShapeIndices(blinkAnimClip, faceRenderer);
-                                    }
+                                    GatoEditorUtility.NonIndentButton(
+                                        "BlinkAnimationからBlinkBlendShapeを自動取得", 
+                                        () => {
+                                            blinkBlendShapeIndices = GetBlinkBlendShapeIndices(blinkAnimClip, faceRenderer);
+                                        });
                                 }
-
-                                EditorGUI.indentLevel = currentIndentLevel;
-
-                                
                             }
                         }
                     }
