@@ -1200,25 +1200,16 @@ namespace VRCDeveloperTool
             if (blinkController == null)
             {
                 var originBlinkControllerPath = noBlinkSetterFolderPath + BLINK_CONTROLLER_PATH;
-                GatoEditorUtility.CreateNoExistFolders(saveFolderPath);
-                var newBlinkControllerPath = AssetDatabase.GenerateUniqueAssetPath(saveFolderPath + "\\" + "BlinkController" + avatarName + ".controller");
-                AssetDatabase.CopyAsset(originBlinkControllerPath, newBlinkControllerPath);
-                AssetDatabase.SaveAssets();
-                AssetDatabase.Refresh();
-                blinkController = AssetDatabase.LoadAssetAtPath(newBlinkControllerPath, typeof(AnimatorController)) as AnimatorController;
+                var newBlinkControllerPath = saveFolderPath + "\\" + "BlinkController" + avatarName + ".controller";
+                blinkController = GatoEditorUtility.DuplicateAsset<AnimatorController>(originBlinkControllerPath, newBlinkControllerPath);
                 blinkAnimator.runtimeAnimatorController = blinkController as RuntimeAnimatorController;
             }
 
             if (blinkAnimClip == null)
             {
                 var originBlinkAnimClipPath = noBlinkSetterFolderPath + BLINK_ANIMATION_CLIP_PATH;
-                GatoEditorUtility.CreateNoExistFolders(saveFolderPath);
-                var newBlinkAnimClipPath = AssetDatabase.GenerateUniqueAssetPath(saveFolderPath + "\\" + "BlinkAnimation" + avatarName + ".anim");
-                AssetDatabase.CopyAsset(originBlinkAnimClipPath, newBlinkAnimClipPath);
-                AssetDatabase.SaveAssets();
-                AssetDatabase.Refresh();
-
-                blinkAnimClip = AssetDatabase.LoadAssetAtPath(newBlinkAnimClipPath, typeof(AnimationClip)) as AnimationClip;
+                var newBlinkAnimClipPath = saveFolderPath + "\\" + "BlinkAnimation" + avatarName + ".anim";
+                blinkAnimClip = GatoEditorUtility.DuplicateAsset<AnimationClip>(originBlinkAnimClipPath, newBlinkAnimClipPath);
                 blinkController.layers[0].stateMachine.states[0].state.motion = blinkAnimClip;
 
                 var originalBlinkBinding = AnimationUtility.GetCurveBindings(blinkAnimClip).First();
