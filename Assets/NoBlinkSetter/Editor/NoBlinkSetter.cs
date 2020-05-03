@@ -318,6 +318,18 @@ namespace VRCDeveloperTool
                 if (blinkController == null || blinkAnimClip == null)
                 {
                     EditorGUILayout.HelpBox("まばたきアニメーションが設定されていません\n自動作成するにはFaceMeshとBlendShapeを設定してください", MessageType.Error);
+
+                    EditorGUI.BeginDisabledGroup(
+                        faceRenderer == null ||
+                        blinkBlendShapeIndices == null ||
+                        blinkBlendShapeIndices.Where(x => x == -1).Any());
+                    {
+                        if (GUILayout.Button("まばたきアニメーションを自動作成する"))
+                        {
+                            SetBlinkAnimation(targetAvatar.name, faceRenderer, blinkBlendShapeIndices);
+                        }
+                    }
+                    EditorGUI.EndDisabledGroup();
                 }
 
                 EditorGUILayout.Space();
@@ -382,17 +394,7 @@ namespace VRCDeveloperTool
 
             if (targetAvatar != null && (blinkController == null || blinkAnimClip == null))
             {
-                EditorGUI.BeginDisabledGroup(
-                faceRenderer == null ||
-                blinkBlendShapeIndices == null ||
-                blinkBlendShapeIndices.Where(x => x == -1).Any());
-                {
-                    if (GUILayout.Button("まばたきアニメーションを自動作成する"))
-                    {
-                        SetBlinkAnimation(targetAvatar.name, faceRenderer, blinkBlendShapeIndices);
-                    }
-                }
-                EditorGUI.EndDisabledGroup();
+
             }
 
 
