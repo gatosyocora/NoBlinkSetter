@@ -61,4 +61,32 @@ public class GatoEditorUtility
 
         return false;
     }
+
+    /// <summary>
+    /// 任意のアセットを複製する
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="source"></param>
+    /// <param name="newAssetName"></param>
+    /// <param name="saveFolderPath"></param>
+    /// <returns></returns>
+    public static T DuplicateAsset<T>(T source, string newAssetPath) where T : UnityEngine.Object
+    {
+        var sourcePath = AssetDatabase.GetAssetPath(source);
+        return DuplicateAsset<T>(sourcePath, newAssetPath);
+    }
+
+    public static T DuplicateAsset<T>(string sourcePath, string newAssetPath) where T : UnityEngine.Object
+    {
+        var newFolderPath = Path.GetDirectoryName(newAssetPath);
+        CreateNoExistFolders(newFolderPath);
+        var newPath = AssetDatabase.GenerateUniqueAssetPath(newAssetPath);
+        AssetDatabase.CopyAsset(sourcePath, newPath);
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+
+        var newAsset = AssetDatabase.LoadAssetAtPath(newPath, typeof(T)) as T;
+
+        return newAsset;
+    }
 }
