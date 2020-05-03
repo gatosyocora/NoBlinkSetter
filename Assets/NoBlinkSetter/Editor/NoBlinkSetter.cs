@@ -402,7 +402,7 @@ namespace VRCDeveloperTool
                 blinkController == null || 
                 blinkAnimClip == null ||
                 blinkBlendShapeIndices == null ||
-                blinkBlendShapeIndices.Select(x => x == -1).Any());
+                blinkBlendShapeIndices.All(x => x == -1));
             {
                 using (new EditorGUILayout.HorizontalScope())
                 {
