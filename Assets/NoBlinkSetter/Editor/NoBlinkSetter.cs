@@ -226,9 +226,10 @@ namespace VRCDeveloperTool
                             }
                             if (GUILayout.Button("-"))
                             {
-                                if (blinkBlendShapeIndices.Count > 1)
+                                blinkBlendShapeIndices.RemoveAt(blinkBlendShapeIndices.Count-1);
+                                if (blinkBlendShapeIndices.Count <= 0)
                                 {
-                                    blinkBlendShapeIndices.RemoveAt(blinkBlendShapeIndices.Count - 1);
+                                    blinkBlendShapeIndices.Add(-1);
                                 }
                             }
                         }
@@ -244,9 +245,10 @@ namespace VRCDeveloperTool
 
                                         if (GUILayout.Button("x", GUILayout.Width(30f)))
                                         {
-                                            if (blinkBlendShapeIndices.Count() > 1)
+                                            blinkBlendShapeIndices.RemoveAt(i);
+                                            if (blinkBlendShapeIndices.Count <= 0)
                                             {
-                                                blinkBlendShapeIndices.RemoveAt(i);
+                                                blinkBlendShapeIndices.Add(-1);
                                             }
                                         }
                                     }
@@ -263,7 +265,7 @@ namespace VRCDeveloperTool
                                 {
                                     EditorGUILayout.HelpBox("まばたきアニメーションを自動作成するためには\nまばたき用のBlendShapeを選択してください", MessageType.Error);
                                 }
-                                else
+                                else if (blinkBlendShapeIndices.All(x => x == -1))
                                 {
                                     EditorGUILayout.HelpBox("まばたき用BlendShapeが見つかりませんでした\nFaceMesh, BlinkController, BlinkAnimationが正しく設定されていることを確認してください", MessageType.Error);
                                 }
