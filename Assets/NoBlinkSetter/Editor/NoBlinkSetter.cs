@@ -1117,6 +1117,7 @@ namespace VRCDeveloperTool
         {
             var originalPath = AssetDatabase.GetAssetPath(controller);
             var ext = Path.GetExtension(originalPath);
+            GatoEditorUtility.CreateNoExistFolders(saveFolderPath);
             var newPath = AssetDatabase.GenerateUniqueAssetPath(saveFolderPath + "\\" + fileName + ext);
             AssetDatabase.CopyAsset(originalPath, newPath);
             AssetDatabase.SaveAssets();
@@ -1136,6 +1137,7 @@ namespace VRCDeveloperTool
         {
             var originPath = AssetDatabase.GetAssetPath(animClip);
             var ext = Path.GetExtension(originPath);
+            GatoEditorUtility.CreateNoExistFolders(saveFolderPath);
             var newPath = AssetDatabase.GenerateUniqueAssetPath(saveFolderPath + "\\" + fileName + ext);
             AssetDatabase.CopyAsset(originPath, newPath);
             AssetDatabase.SaveAssets();
@@ -1156,6 +1158,7 @@ namespace VRCDeveloperTool
         {
             var sourcePath = AssetDatabase.GetAssetPath(controller);
             var ext = Path.GetExtension(sourcePath);
+            GatoEditorUtility.CreateNoExistFolders(saveFolderPath);
             var newPath = AssetDatabase.GenerateUniqueAssetPath(saveFolderPath + "\\" + newAssetName + ext);
             AssetDatabase.CopyAsset(sourcePath, newPath);
             AssetDatabase.SaveAssets();
@@ -1254,6 +1257,7 @@ namespace VRCDeveloperTool
             if (blinkController == null)
             {
                 var originBlinkControllerPath = noBlinkSetterFolderPath + BLINK_CONTROLLER_PATH;
+                GatoEditorUtility.CreateNoExistFolders(saveFolderPath);
                 var newBlinkControllerPath = AssetDatabase.GenerateUniqueAssetPath(saveFolderPath + "\\" + "BlinkController" + avatarName + ".controller");
                 AssetDatabase.CopyAsset(originBlinkControllerPath, newBlinkControllerPath);
                 AssetDatabase.SaveAssets();
@@ -1265,10 +1269,12 @@ namespace VRCDeveloperTool
             if (blinkAnimClip == null)
             {
                 var originBlinkAnimClipPath = noBlinkSetterFolderPath + BLINK_ANIMATION_CLIP_PATH;
+                GatoEditorUtility.CreateNoExistFolders(saveFolderPath);
                 var newBlinkAnimClipPath = AssetDatabase.GenerateUniqueAssetPath(saveFolderPath + "\\" + "BlinkAnimation" + avatarName + ".anim");
                 AssetDatabase.CopyAsset(originBlinkAnimClipPath, newBlinkAnimClipPath);
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
+
                 blinkAnimClip = AssetDatabase.LoadAssetAtPath(newBlinkAnimClipPath, typeof(AnimationClip)) as AnimationClip;
                 blinkController.layers[0].stateMachine.states[0].state.motion = blinkAnimClip;
 
@@ -1314,7 +1320,7 @@ namespace VRCDeveloperTool
         private string GetSaveFolderPath(AnimatorOverrideController controller)
         {
             var saveFolderPath = string.Empty;
-            if (standingAnimController != null)
+            if (controller != null)
             {
                 var customStandingAnimsPath = AssetDatabase.GetAssetPath(controller);
                 var controllerFolderPath = Path.GetDirectoryName(customStandingAnimsPath);
@@ -1326,29 +1332,13 @@ namespace VRCDeveloperTool
                 else
                 {
                     saveFolderPath = controllerFolderPath + "\\" + SAVE_FOLDER_NAME;
-                    if (!Directory.Exists(saveFolderPath))
-                    {
-                        AssetDatabase.CreateFolder(controllerFolderPath, SAVE_FOLDER_NAME);
-                        AssetDatabase.SaveAssets();
-                        AssetDatabase.Refresh();
-                    }
                 }
             }
 
             if (string.IsNullOrEmpty(saveFolderPath))
             {
                 var avatarName = targetAvatar.name.Replace(NOBLINK_ASSET_NAME, string.Empty);
-                var animationFolderPath = "Assets/NoBlinkAnimations";
-                if (!Directory.Exists(animationFolderPath))
-                {
-                    AssetDatabase.CreateFolder("Assets", "NoBlinkAnimations");
-                }
-                var avatarFolderPath = animationFolderPath + "/" + avatarName;
-                if (!Directory.Exists(avatarFolderPath))
-                {
-                    AssetDatabase.CreateFolder(animationFolderPath, avatarName);
-                }
-                saveFolderPath = avatarFolderPath;
+                saveFolderPath = "Assets\\NoBlinkAnimations\\" + avatarName;
             }
 
             return saveFolderPath;
