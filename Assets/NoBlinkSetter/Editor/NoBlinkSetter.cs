@@ -276,7 +276,17 @@ namespace VRCDeveloperTool
                                     EditorGUILayout.HelpBox("まばたき用BlendShapeが見つかりませんでした\nFaceMesh, BlinkController, BlinkAnimationが正しく設定されていることを確認してください", MessageType.Error);
                                 }
 
+                                using (new EditorGUI.DisabledGroupScope(blinkAnimClip == null))
+                                {
+                                    if (GUILayout.Button("BlinkAnimationからBlinkBlendShapeを自動取得"))
+                                    {
+                                        blinkBlendShapeNames = GetBlinkBlendShapeNames(blinkAnimClip);
+                                    }
+                                }
+
                                 EditorGUI.indentLevel = currentIndentLevel;
+
+                                
                             }
                         }
                     }
