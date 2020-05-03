@@ -557,7 +557,8 @@ namespace VRCDeveloperTool
 
                 if (afkBlinkAnimClip != null)
                 {
-                    blinkController = DuplicateAsset<AnimatorController>(blinkController, blinkController.name+AFK_ASSET_NAME, saveFolderPath);
+                    var fileName = blinkController.name + AFK_ASSET_NAME + ".controller";
+                    blinkController = GatoEditorUtility.DuplicateAsset<AnimatorController>(blinkController, saveFolderPath +"\\"+fileName);
                     blinkAnimator.runtimeAnimatorController = blinkController;
                     blinkAnimClip = afkBlinkAnimClip;
                     blinkController.layers[0].stateMachine.states[0].state.motion = blinkAnimClip;
@@ -575,8 +576,8 @@ namespace VRCDeveloperTool
 
             if (duplicateAvatarAnimatorController)
             {
-                var fileName = standingAnimController.name + NOBLINK_ASSET_NAME;
-                var animController = DuplicateAsset<AnimatorOverrideController>(standingAnimController, fileName, saveFolderPath);
+                var fileName = standingAnimController.name + NOBLINK_ASSET_NAME+"overrideController";
+                var animController = GatoEditorUtility.DuplicateAsset<AnimatorOverrideController>(standingAnimController, saveFolderPath + "\\" +fileName);
                 noBlinkAvatar.CustomStandingAnims = animController;
                 standingAnimController = animController;
             }
@@ -937,10 +938,10 @@ namespace VRCDeveloperTool
             if (defaultBlinkAnim == null) return null;
 
             AnimationClip afkAnim;
-            string fileName = defaultBlinkAnim.name + AFK_ASSET_NAME;
+            string fileName = defaultBlinkAnim.name + AFK_ASSET_NAME + ".anim";
             if (duplicateAnimationClip)
             {
-                afkAnim = DuplicateAsset<AnimationClip>(defaultBlinkAnim, fileName, saveFolderPath);
+                afkAnim = GatoEditorUtility.DuplicateAsset<AnimationClip>(defaultBlinkAnim, saveFolderPath+"\\"+fileName);
             }
             else
             {
@@ -1109,29 +1110,6 @@ namespace VRCDeveloperTool
         }
 
         /// <summary>
-        /// 任意のアセットを複製する
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="source"></param>
-        /// <param name="newAssetName"></param>
-        /// <param name="saveFolderPath"></param>
-        /// <returns></returns>
-        private T DuplicateAsset<T>(T source, string newAssetName, string saveFolderPath) where T : Object
-        {
-            var sourcePath = AssetDatabase.GetAssetPath(source);
-            var ext = Path.GetExtension(sourcePath);
-            GatoEditorUtility.CreateNoExistFolders(saveFolderPath);
-            var newPath = AssetDatabase.GenerateUniqueAssetPath(saveFolderPath + "\\" + newAssetName + ext);
-            AssetDatabase.CopyAsset(sourcePath, newPath);
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-
-            var newAsset = AssetDatabase.LoadAssetAtPath(newPath, source.GetType()) as T;
-
-            return newAsset;
-        }
-
-        /// <summary>
         /// まばたきアニメーションが最適か調べて必要であれば設定する
         /// </summary>
         private bool CheckAndChangeBlinkAnimation(AnimationClip blinkAnimClip, out AnimationClip newBlinkAnimClip)
@@ -1164,8 +1142,8 @@ namespace VRCDeveloperTool
 
             if (needShiftAnimationKeys)
             {
-                var fileName = blinkAnimClip.name + NOBLINK_ASSET_NAME;
-                newBlinkAnimClip = DuplicateAsset<AnimationClip>(blinkAnimClip, fileName, saveFolderPath);
+                var fileName = blinkAnimClip.name + NOBLINK_ASSET_NAME + ".anim";
+                newBlinkAnimClip = GatoEditorUtility.DuplicateAsset<AnimationClip>(blinkAnimClip, saveFolderPath+"\\"+fileName);
 
                 blinkBindings = AnimationUtility.GetCurveBindings(newBlinkAnimClip)
                                     .Where(x => x.type == typeof(SkinnedMeshRenderer));
