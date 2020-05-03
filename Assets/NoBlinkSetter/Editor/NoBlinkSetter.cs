@@ -643,6 +643,11 @@ namespace VRCDeveloperTool
 
             faceRenderer = avatar.VisemeSkinnedMesh;
 
+            blinkBlendShapeIndices = new List<int>
+            {
+                -1
+            };
+
             if (faceRenderer != null)
             {
                 // まばたきアニメーションを取得
@@ -667,10 +672,14 @@ namespace VRCDeveloperTool
 
                 // BlendShapeの一覧を取得
                 blendShapeNames = GetBlendShapeNames(faceRenderer);
+
+                if (blinkAnimClip != null)
+                {
+                    blinkBlendShapeIndices = GetBlinkBlendShapeIndices(blinkAnimClip, faceRenderer);
+                }
             }
 
-            blinkBlendShapeIndices = new List<int>();
-            blinkBlendShapeIndices.Add(-1);
+
 
             standingAnimController = avatar.CustomStandingAnims;
             sittingAnimController = avatar.CustomSittingAnims;
@@ -1340,7 +1349,7 @@ namespace VRCDeveloperTool
 
         private List<int> GetBlinkBlendShapeIndices(AnimationClip blinkAnimClip, SkinnedMeshRenderer faceRenderer)
         {
-            if (blinkAnimClip == null || faceRenderer == null) return null;
+            if (blinkAnimClip == null || faceRenderer == null) return new List<int> { -1 };
 
             var blinkBlendShapeNames = GetBlinkBlendShapeNames(blinkAnimClip);
             var blinkBlendShapeIndices = BlendShapeNameToIndex(blinkBlendShapeNames, faceRenderer).ToList();
