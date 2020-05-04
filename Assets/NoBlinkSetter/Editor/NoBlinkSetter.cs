@@ -702,8 +702,11 @@ namespace VRCDeveloperTool
 
             hasVRCEyeTracking = IsVRCEyeTrackingAvatar(avatar);
 
-            var avatarAnimator = avatar.gameObject.GetComponent<Animator>();
-            afkConstraintTarget = avatarAnimator.GetBoneTransform(HumanBodyBones.Head);
+            if (afkEffectType != AFK_EFFECT_TYPE.CUSTOM || afkConstraintTarget == null)
+            {
+                var avatarAnimator = avatar.gameObject.GetComponent<Animator>();
+                afkConstraintTarget = avatarAnimator.GetBoneTransform(HumanBodyBones.Head);
+            }
         }
 
         /// <summary>
