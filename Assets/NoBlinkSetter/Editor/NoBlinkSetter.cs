@@ -494,6 +494,7 @@ namespace VRCDeveloperTool
             else
             {
                 objNoBlink = obj;
+                noBlinkAvatar = objNoBlink.GetComponent<VRC_AvatarDescriptor>();
                 noBlinkAnimatorObj = noBlinkAnimatorObjTrans.gameObject;
                 faceMesh = faceRenderer;
             }
