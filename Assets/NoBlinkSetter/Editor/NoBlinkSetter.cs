@@ -584,8 +584,12 @@ namespace VRCDeveloperTool
             {
                 var fileName = standingAnimController.name + NOBLINK_ASSET_NAME+".overrideController";
                 var animController = GatoEditorUtility.DuplicateAsset<AnimatorOverrideController>(standingAnimController, saveFolderPath + "\\" +fileName);
-                noBlinkAvatar.CustomStandingAnims = animController;
-                standingAnimController = animController;
+
+                if (animController != null)
+                {
+                    noBlinkAvatar.CustomStandingAnims = animController;
+                    standingAnimController = animController;
+                }
             }
 
             // アニメーションオーバーライド用のAnimationClipを新しいパスに設定しなおす
