@@ -1357,6 +1357,8 @@ namespace VRCDeveloperTool
         /// <returns></returns>
         private Transform GetCorrespondTransformBetweenDuplicatedObjects(GameObject source, GameObject duplicated, Transform target)
         {
+            if (source.transform == target) return duplicated.transform;
+
             var path = GetHierarchyPathFromObj1ToObj2(source, target.gameObject);
 
             return duplicated.transform.Find(path);
