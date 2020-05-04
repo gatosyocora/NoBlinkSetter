@@ -38,7 +38,6 @@ namespace VRCDeveloperTool
 
         private float afkMinute = 3f;
         private Transform afkConstraintTarget;
-        private Transform headTrans;
 
         public enum AFK_EFFECT_TYPE {ZZZ, BUBBLE, CUSTOM};
         private AFK_EFFECT_TYPE afkEffectType = AFK_EFFECT_TYPE.ZZZ;
@@ -694,8 +693,7 @@ namespace VRCDeveloperTool
             hasVRCEyeTracking = IsVRCEyeTrackingAvatar(avatar);
 
             var avatarAnimator = avatar.gameObject.GetComponent<Animator>();
-            headTrans = avatarAnimator.GetBoneTransform(HumanBodyBones.Head);
-            afkConstraintTarget = headTrans;
+            afkConstraintTarget = avatarAnimator.GetBoneTransform(HumanBodyBones.Head);
         }
 
         /// <summary>
