@@ -386,19 +386,21 @@ namespace VRCDeveloperTool
                                                 true) as Transform;
                     }
                 }
-            }
 
-            EditorGUILayout.Space();
+                EditorGUILayout.Space();
 
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                saveFolderPath = EditorGUILayout.TextField("SaveFolder", saveFolderPath);
-
-                if (GUILayout.Button("Select", GUILayout.Width(100f)))
+                using (new EditorGUILayout.HorizontalScope())
                 {
-                    saveFolderPath = OpenFolderSelector("Select save folder", saveFolderPath);
+                    saveFolderPath = EditorGUILayout.TextField("SaveFolder", saveFolderPath);
+
+                    if (GUILayout.Button("Select", GUILayout.Width(100f)))
+                    {
+                        saveFolderPath = OpenFolderSelector("Select save folder", saveFolderPath);
+                    }
                 }
             }
+
+
 
             if (targetAvatar != null && (blinkController == null || blinkAnimClip == null))
             {
