@@ -467,7 +467,7 @@ namespace VRCDeveloperTool
                 noBlinkAnimatorObj.transform.localScale = Vector3.one;
 
                 // まばたき防止Animatorを設定
-                var noBlinkAnimatorController = CreateNoBlinkAnimatorController(objNoBlink.name, noBlinkSetterFolderPath);
+                var noBlinkAnimatorController = CreateNoBlinkAnimatorController("AnimationStopController_"+obj.name, noBlinkSetterFolderPath);
                 var noBlinkAnimator = noBlinkAnimatorObj.AddComponent<Animator>();
                 noBlinkAnimator.runtimeAnimatorController = noBlinkAnimatorController;
                 noBlinkAnimator.enabled = false;
@@ -483,7 +483,7 @@ namespace VRCDeveloperTool
                 currentTrans.SetParent(noBlinkAnimatorObj.transform);
 
                 // まばたき防止Animationを設定
-                var noBlinkAnim = CreateNoBlinkAnimationClip(objNoBlink.name, noBlinkSetterFolderPath);
+                var noBlinkAnim = CreateNoBlinkAnimationClip("AnimationStopAnimation_" +obj.name, noBlinkSetterFolderPath);
                 var path = GetHierarchyPathFromObj1ToObj2(noBlinkAnimatorObj, blinkAnimator.gameObject);
                 ChangeAnimationKeysPath(ref noBlinkAnim, path);
                 var states = noBlinkAnimatorController.layers[0].stateMachine.states.ToList();
