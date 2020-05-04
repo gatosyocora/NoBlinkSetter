@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEditor;
 using System;
 using System.IO;
+using System.Text.RegularExpressions;
 
 public class GatoEditorUtility
 {
@@ -88,5 +89,11 @@ public class GatoEditorUtility
         var newAsset = AssetDatabase.LoadAssetAtPath(newPath, typeof(T)) as T;
 
         return newAsset;
+    }
+
+    public static string AddKeywordToEnd(string target, string keyword)
+    {
+        var normalString = Regex.Replace(target, keyword + ".*", string.Empty);
+        return normalString + keyword;
     }
 }
