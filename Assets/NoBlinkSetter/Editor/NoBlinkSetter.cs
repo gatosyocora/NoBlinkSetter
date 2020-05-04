@@ -508,9 +508,11 @@ namespace VRCDeveloperTool
                 faceMesh = faceRenderer;
             }
 
+            var blinkBlendShapeNames = BlendShapeIndicesToName(blinkBlendShapeIndices, faceMesh);
+
             // まばたきアニメーションを最適化する
             AnimationClip newBlinkAnimClip;
-            var createdNewBlinkAnimation = CheckAndChangeBlinkAnimation(blinkAnimClip, out newBlinkAnimClip);
+            var createdNewBlinkAnimation = CheckAndChangeBlinkAnimation(blinkAnimClip, blinkBlendShapeNames, out newBlinkAnimClip);
 
             if (createdNewBlinkAnimation)
             {
@@ -568,7 +570,6 @@ namespace VRCDeveloperTool
 
                 // まばたきアニメーションの最適化でまばたきアニメーションのAnimationClipを複製しているなら、
                 // まばたきアニメーションのAnimationClipを再度複製せずに上書きするようにする(duplicateAnimationClipで設定)
-                var blinkBlendShapeNames = blinkBlendShapeIndices.Select(x => blendShapeNames[x]).ToList();
                 var afkBlinkAnimClip = CreateAfkBlinkAnimation(blinkAnimClip, afkMinute * 60, blinkAnimator, afkEffect, blinkBlendShapeNames, !createdNewBlinkAnimation);
 
                 if (afkBlinkAnimClip != null)
@@ -1143,7 +1144,7 @@ namespace VRCDeveloperTool
         /// <summary>
         /// まばたきアニメーションが最適か調べて必要であれば設定する
         /// </summary>
-        private bool CheckAndChangeBlinkAnimation(AnimationClip blinkAnimClip, out AnimationClip newBlinkAnimClip)
+        private bool CheckAndChangeBlinkAnimation(AnimationClip blinkAnimClip, List<string> blinkBlendShapeNames, out AnimationClip newBlinkAnimClip)
         {
             var blinkBindings = AnimationUtility.GetCurveBindings(blinkAnimClip)
                                     .Where(x => x.type == typeof(SkinnedMeshRenderer));
@@ -1153,12 +1154,16 @@ namespace VRCDeveloperTool
             float shiftStartTime = 0f;
             foreach (var binding in blinkBindings)
             {
+                var blendShapeName = binding.propertyName.Replace("blendShape.", string.Empty);
+
+                if (!blinkBlendShapeNames.Contains(blendShapeName)) continue;
+
                 var curve = AnimationUtility.GetEditorCurve(blinkAnimClip, binding);
                 var keys = curve.keys;
 
                 for (int i = 0; i < keys.Length; i++)
                 {
-                    if (keys[i].time < 3f && keys[i].time != 0f)
+                    if (keys[i].time < 3f && keys[i].time != 0f && keys[i].value > 0f)
                     {
                         needShiftAnimationKeys = true;
                         shiftStartTime = keys[i].time;
