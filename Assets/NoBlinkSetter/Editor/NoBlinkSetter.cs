@@ -277,7 +277,7 @@ namespace VRCDeveloperTool
                                 else if (blinkBlendShapeIndices.All(x => x == -1))
                                 {
                                     GatoEditorUtility.NonIndentHelpBox(
-                                        "まばたき用BlendShapeが見つかりませんでした\nFaceMesh, BlinkController, BlinkAnimationが正しく設定されていることを確認してください", 
+                                        "まばたき用BlendShapeが見つかりませんでした\nFaceMeshとBlinkAnimationを設定して自動取得してください", 
                                         MessageType.Error);
                                 }
 
