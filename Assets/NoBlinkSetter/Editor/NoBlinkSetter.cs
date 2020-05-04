@@ -1347,6 +1347,12 @@ namespace VRCDeveloperTool
             return duplicated.transform.Find(path);
         }
 
+        /// <summary>
+        /// アニメーションファイルからBlendShapeのIndexを取得する
+        /// </summary>
+        /// <param name="blinkAnimClip"></param>
+        /// <param name="faceRenderer"></param>
+        /// <returns></returns>
         private List<int> GetBlinkBlendShapeIndices(AnimationClip blinkAnimClip, SkinnedMeshRenderer faceRenderer)
         {
             if (blinkAnimClip == null || faceRenderer == null) return new List<int> { -1 };
