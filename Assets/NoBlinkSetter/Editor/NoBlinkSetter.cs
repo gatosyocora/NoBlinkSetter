@@ -365,13 +365,19 @@ namespace VRCDeveloperTool
 
                         if (afkEffectType == AFK_EFFECT_TYPE.CUSTOM)
                         {
-                            afkEffect = EditorGUILayout.ObjectField(
-                                                "AFK中に表示するObject",
-                                                afkEffect,
-                                                typeof(GameObject),
-                                                true) as GameObject;
+                            using (var check = new EditorGUI.ChangeCheckScope())
+                            {
+                                afkEffect = EditorGUILayout.ObjectField(
+                                                    "AFK中に表示するObject",
+                                                    afkEffect,
+                                                    typeof(GameObject),
+                                                    true) as GameObject;
 
-
+                                if (check.changed && afkEffect != null)
+                                {
+                                    afkConstraintTarget = afkEffect.transform.parent;
+                                }
+                            }
                         }
 
                         afkConstraintTarget = EditorGUILayout.ObjectField(
