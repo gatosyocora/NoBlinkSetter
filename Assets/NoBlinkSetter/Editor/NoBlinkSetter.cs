@@ -195,7 +195,24 @@ namespace VRCDeveloperTool
                     if (EditorGUI.EndChangeCheck())
                     {
                         faceRenderer = targetAvatar.VisemeSkinnedMesh;
-                        blendShapeNames = GetBlendShapeNames(faceRenderer);
+
+                        if (faceRenderer != null)
+                        {
+                            blendShapeNames = GetBlendShapeNames(faceRenderer);
+                            blinkAnimator = GetBlinkAnimator(faceRenderer.gameObject);
+                        }
+                        if (blinkAnimator != null)
+                        {
+                            blinkController = blinkAnimator.runtimeAnimatorController as AnimatorController;
+                        }
+                        if (blinkController != null)
+                        {
+                            blinkAnimClip = blinkController.layers[0].stateMachine.states[0].state.motion as AnimationClip;
+                        }
+                        if (blinkAnimClip != null && faceRenderer != null)
+                        {
+                            blinkBlendShapeIndices = GetBlinkBlendShapeIndices(blinkAnimClip, faceRenderer);
+                        }
                     }
 
 
