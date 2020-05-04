@@ -274,23 +274,22 @@ namespace VRCDeveloperTool
                                         "まばたきアニメーションを自動作成するためには\nまばたき用のBlendShapeを選択してください", 
                                         MessageType.Error);
                                 }
-                                else if (blinkBlendShapeIndices.All(x => x == -1))
                                 {
                                     GatoEditorUtility.NonIndentHelpBox(
                                         "まばたき用BlendShapeが見つかりませんでした\nFaceMeshとBlinkAnimationを設定して自動取得してください", 
                                         MessageType.Error);
-                                }
 
-                                using (new EditorGUI.DisabledGroupScope(
-                                    faceRenderer == null ||
-                                    blinkAnimClip == null
-                                ))
-                                {
-                                    GatoEditorUtility.NonIndentButton(
-                                        "BlinkAnimationからBlinkBlendShapeを自動取得", 
-                                        () => {
-                                            blinkBlendShapeIndices = GetBlinkBlendShapeIndices(blinkAnimClip, faceRenderer);
-                                        });
+                                    using (new EditorGUI.DisabledGroupScope(
+                                        faceRenderer == null ||
+                                        blinkAnimClip == null
+                                    ))
+                                    {
+                                        GatoEditorUtility.NonIndentButton(
+                                            "BlinkAnimationからBlinkBlendShapeを自動取得",
+                                            () => {
+                                                blinkBlendShapeIndices = GetBlinkBlendShapeIndices(blinkAnimClip, faceRenderer);
+                                            });
+                                    }
                                 }
                             }
                         }
