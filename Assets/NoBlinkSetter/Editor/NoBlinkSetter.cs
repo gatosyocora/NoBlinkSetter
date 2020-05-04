@@ -1150,6 +1150,7 @@ namespace VRCDeveloperTool
                                     .Where(x => x.type == typeof(SkinnedMeshRenderer));
 
             // 3秒以内にまばたき用のアニメーションキーがあるか調べる
+            // timeが0ではなく、valueが0より大きい最初のキーが3秒ずらす最初のキーとなる
             bool needShiftAnimationKeys = false;
             float shiftStartTime = 0f;
             foreach (var binding in blinkBindings)
