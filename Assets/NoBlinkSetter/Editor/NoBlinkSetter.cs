@@ -268,12 +268,7 @@ namespace VRCDeveloperTool
                                         MessageType.Warning);
                                 }
 
-                                if (blinkController == null || blinkAnimClip == null)
-                                {
-                                    GatoEditorUtility.NonIndentHelpBox(
-                                        "まばたきアニメーションを自動作成するためには\nまばたき用のBlendShapeを選択してください", 
-                                        MessageType.Error);
-                                }
+                                if (blinkBlendShapeIndices.All(x => x == -1))
                                 {
                                     GatoEditorUtility.NonIndentHelpBox(
                                         "まばたき用BlendShapeが見つかりませんでした\nFaceMeshとBlinkAnimationを設定して自動取得してください", 
