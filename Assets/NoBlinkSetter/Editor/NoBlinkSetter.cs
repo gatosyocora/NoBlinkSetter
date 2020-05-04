@@ -117,11 +117,6 @@ namespace VRCDeveloperTool
                     EditorGUILayout.LabelField("NoBlinkSetter" + (isSettingNoBlink ? "設定済みアバター" : "未設定アバター"));
                 }
 
-                if (targetAvatar != null && !isSettingNoBlink)
-                    EditorGUILayout.HelpBox("Avatarを複製してNoBlinkを設定します", MessageType.Info);
-                else if (targetAvatar != null && isSettingNoBlink)
-                    EditorGUILayout.HelpBox("AnimationClipsを編集してNoBlinkに対応させます", MessageType.Warning);
-
                 // VRC_AvatarDescripterに設定してあるAnimator
                 EditorGUILayout.Space();
                 EditorGUILayout.LabelField("Custom Standing Anims", EditorStyles.boldLabel);
@@ -395,6 +390,11 @@ namespace VRCDeveloperTool
 
             }
 
+
+            if (targetAvatar != null && !isSettingNoBlink)
+                EditorGUILayout.HelpBox("Avatarを複製してNoBlinkを設定します", MessageType.Info);
+            else if (targetAvatar != null && isSettingNoBlink)
+                EditorGUILayout.HelpBox("AnimationClipsを編集してNoBlinkに対応させます", MessageType.Warning);
 
             EditorGUI.BeginDisabledGroup(
                 targetAvatar == null || 
