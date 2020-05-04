@@ -980,7 +980,7 @@ namespace VRCDeveloperTool
                 afkAnim.name += AFK_ASSET_NAME;
                 var defaultPath = AssetDatabase.GetAssetPath(defaultBlinkAnim);
                 // RenameAssetの際に存在するファイルだとRenameできないのでUniqueな名前を取得する
-                var newAnimPath = AssetDatabase.GenerateUniqueAssetPath(Path.GetDirectoryName(defaultPath)+ "\\" + fileName + ".anim");
+                var newAnimPath = AssetDatabase.GenerateUniqueAssetPath(Path.GetDirectoryName(defaultPath)+ "\\" + fileName);
                 fileName = Path.GetFileNameWithoutExtension(newAnimPath);
                 AssetDatabase.RenameAsset(defaultPath, fileName);
                 afkAnim = AssetDatabase.LoadAssetAtPath<AnimationClip>(newAnimPath) as AnimationClip;
