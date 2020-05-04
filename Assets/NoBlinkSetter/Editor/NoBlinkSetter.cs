@@ -111,8 +111,8 @@ namespace VRCDeveloperTool
                 // EyeTracking
                 using (new EditorGUI.IndentLevelScope())
                 {
-                    EditorGUILayout.LabelField("EyeTracking" + (hasVRCEyeTracking ? "対応アバター" : "非対応アバター"));
-                    EditorGUILayout.LabelField("NoBlinkSetter" + (isSettingNoBlink ? "設定済みアバター" : "未設定アバター"));
+                    EditorGUILayout.LabelField("アイトラッキング" + (hasVRCEyeTracking ? "対応アバター" : "非対応アバター"));
+                    EditorGUILayout.LabelField("まばたき防止" + (isSettingNoBlink ? "設定済みアバター" : "未設定アバター"));
                 }
 
                 // VRC_AvatarDescripterに設定してあるAnimator
