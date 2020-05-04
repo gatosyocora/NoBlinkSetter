@@ -19,7 +19,6 @@ namespace VRCDeveloperTool
     {
         private VRC_AvatarDescriptor targetAvatar = null;
         private AnimatorOverrideController standingAnimController = null;
-        private AnimatorOverrideController sittingAnimController = null;
         private SkinnedMeshRenderer faceRenderer = null;
         private string[] blendShapeNames = null;
         private List<int> blinkBlendShapeIndices = null;
@@ -400,13 +399,6 @@ namespace VRCDeveloperTool
                 }
             }
 
-
-
-            if (targetAvatar != null && (blinkController == null || blinkAnimClip == null))
-            {
-
-            }
-
             EditorGUILayout.Space();
 
             if (targetAvatar != null && !isSettingNoBlink)
@@ -697,10 +689,7 @@ namespace VRCDeveloperTool
                 }
             }
 
-
-
             standingAnimController = avatar.CustomStandingAnims;
-            sittingAnimController = avatar.CustomSittingAnims;
 
             hasVRCEyeTracking = IsVRCEyeTrackingAvatar(avatar);
 
