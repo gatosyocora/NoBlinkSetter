@@ -564,7 +564,7 @@ namespace VRCDeveloperTool
 
                 if (afkBlinkAnimClip != null)
                 {
-                    var fileName = blinkController.name + AFK_ASSET_NAME + ".controller";
+                    var fileName = GatoEditorUtility.AddKeywordToEnd(blinkController.name, AFK_ASSET_NAME) + ".controller";
                     blinkController = GatoEditorUtility.DuplicateAsset<AnimatorController>(blinkController, saveFolderPath +"\\"+fileName);
                     blinkAnimator.runtimeAnimatorController = blinkController;
                     blinkAnimClip = afkBlinkAnimClip;
@@ -583,7 +583,7 @@ namespace VRCDeveloperTool
 
             if (duplicateAvatarAnimatorController)
             {
-                var fileName = standingAnimController.name + NOBLINK_ASSET_NAME+".overrideController";
+                var fileName = GatoEditorUtility.AddKeywordToEnd(standingAnimController.name, NOBLINK_ASSET_NAME)+".overrideController";
                 var animController = GatoEditorUtility.DuplicateAsset<AnimatorOverrideController>(standingAnimController, saveFolderPath + "\\" +fileName);
 
                 if (animController != null)
@@ -802,7 +802,7 @@ namespace VRCDeveloperTool
 
                 containForBlendShape = false;
 
-                fileName = animClip_origin.name + NOBLINK_ASSET_NAME;
+                fileName = GatoEditorUtility.AddKeywordToEnd(animClip_origin.name, NOBLINK_ASSET_NAME) ;
                 animClip = Object.Instantiate(animClip_origin);
 
                 var blinkBlendShapeNames = BlendShapeIndicesToName(blinkBlendShapeIndices, faceRenderer);
@@ -957,7 +957,7 @@ namespace VRCDeveloperTool
             if (defaultBlinkAnim == null) return null;
 
             AnimationClip afkAnim;
-            string fileName = defaultBlinkAnim.name + AFK_ASSET_NAME + ".anim";
+            string fileName = GatoEditorUtility.AddKeywordToEnd(defaultBlinkAnim.name, AFK_ASSET_NAME) + ".anim";
             if (duplicateAnimationClip)
             {
                 afkAnim = GatoEditorUtility.DuplicateAsset<AnimationClip>(defaultBlinkAnim, saveFolderPath+"\\"+fileName);
@@ -1161,7 +1161,7 @@ namespace VRCDeveloperTool
 
             if (needShiftAnimationKeys)
             {
-                var fileName = blinkAnimClip.name + NOBLINK_ASSET_NAME + ".anim";
+                var fileName = GatoEditorUtility.AddKeywordToEnd(blinkAnimClip.name, NOBLINK_ASSET_NAME) + ".anim";
                 newBlinkAnimClip = GatoEditorUtility.DuplicateAsset<AnimationClip>(blinkAnimClip, saveFolderPath+"\\"+fileName);
 
                 blinkBindings = AnimationUtility.GetCurveBindings(newBlinkAnimClip)
