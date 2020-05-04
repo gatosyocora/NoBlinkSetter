@@ -588,7 +588,7 @@ namespace VRCDeveloperTool
 
             if (duplicateAvatarAnimatorController)
             {
-                var fileName = standingAnimController.name + NOBLINK_ASSET_NAME+"overrideController";
+                var fileName = standingAnimController.name + NOBLINK_ASSET_NAME+".overrideController";
                 var animController = GatoEditorUtility.DuplicateAsset<AnimatorOverrideController>(standingAnimController, saveFolderPath + "\\" +fileName);
                 noBlinkAvatar.CustomStandingAnims = animController;
                 standingAnimController = animController;
