@@ -344,18 +344,6 @@ namespace VRCDeveloperTool
 
                 EditorGUILayout.Space();
 
-                using (new EditorGUILayout.HorizontalScope())
-                {
-                    saveFolderPath = EditorGUILayout.TextField("SaveFolder", saveFolderPath);
-
-                    if (GUILayout.Button("Select", GUILayout.Width(100f)))
-                    {
-                        saveFolderPath = OpenFolderSelector("Select save folder", saveFolderPath);
-                    }
-                }
-
-                EditorGUILayout.Space();
-
                 useAfkSystem = EditorGUILayout.ToggleLeft("AFK System", useAfkSystem, EditorStyles.boldLabel);
 
                 if (useAfkSystem)
@@ -398,8 +386,18 @@ namespace VRCDeveloperTool
                                                 true) as Transform;
                     }
                 }
+            }
 
-                EditorGUILayout.Space();
+            EditorGUILayout.Space();
+
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                saveFolderPath = EditorGUILayout.TextField("SaveFolder", saveFolderPath);
+
+                if (GUILayout.Button("Select", GUILayout.Width(100f)))
+                {
+                    saveFolderPath = OpenFolderSelector("Select save folder", saveFolderPath);
+                }
             }
 
             if (targetAvatar != null && (blinkController == null || blinkAnimClip == null))
@@ -407,6 +405,7 @@ namespace VRCDeveloperTool
 
             }
 
+            EditorGUILayout.Space();
 
             if (targetAvatar != null && !isSettingNoBlink)
                 EditorGUILayout.HelpBox("Avatarを複製してNoBlinkを設定します", MessageType.Info);
