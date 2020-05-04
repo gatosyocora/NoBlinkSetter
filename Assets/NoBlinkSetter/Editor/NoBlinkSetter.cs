@@ -99,6 +99,7 @@ namespace VRCDeveloperTool
             {
                 if (targetAvatar != null)
                 {
+                    afkEffectType = AFK_EFFECT_TYPE.ZZZ;
                     GetAvatarInfo(targetAvatar);
                     saveFolderPath = GetSaveFolderPath(standingAnimController);
                     isSettingNoBlink = CheckSettingNoBlink(targetAvatar.gameObject);
