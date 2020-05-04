@@ -385,6 +385,8 @@ namespace VRCDeveloperTool
                                                 afkConstraintTarget,
                                                 typeof(Transform),
                                                 true) as Transform;
+
+                        GatoEditorUtility.NonIndentHelpBox("AFK用Object設定時にその親オブジェクトが接続先として設定されます", MessageType.Warning);
                     }
                 }
 
