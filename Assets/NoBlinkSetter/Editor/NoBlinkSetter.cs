@@ -322,7 +322,7 @@ namespace VRCDeveloperTool
                 // まばたきアニメーション未設定時のエラー表示
                 if (blinkController == null || blinkAnimClip == null)
                 {
-                    EditorGUILayout.HelpBox("まばたきアニメーションが設定されていません\n自動作成するにはFaceMeshとBlendShapeを設定してください", MessageType.Error);
+                    EditorGUILayout.HelpBox("まばたきアニメーションが設定されていません\n自動作成するにはBlinkのFaceMeshとBlendShapeを設定してください", MessageType.Error);
 
                     EditorGUI.BeginDisabledGroup(
                         faceRenderer == null ||
