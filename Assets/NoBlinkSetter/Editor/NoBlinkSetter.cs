@@ -281,7 +281,10 @@ namespace VRCDeveloperTool
                                         MessageType.Error);
                                 }
 
-                                using (new EditorGUI.DisabledGroupScope(blinkAnimClip == null))
+                                using (new EditorGUI.DisabledGroupScope(
+                                    faceRenderer == null ||
+                                    blinkAnimClip == null
+                                ))
                                 {
                                     GatoEditorUtility.NonIndentButton(
                                         "BlinkAnimationからBlinkBlendShapeを自動取得", 
