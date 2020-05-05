@@ -418,11 +418,13 @@ namespace VRCDeveloperTool
             if (targetAvatar != null)
             {
                 if (!isSettingNoBlink && useAfkSystem)
-                    EditorGUILayout.HelpBox("Avatarを複製してNoBlinkとAFKSystemを設定します", MessageType.Info);
+                    EditorGUILayout.HelpBox("Avatarを複製してまばたき防止機構とAFK機構を設定します", MessageType.Info);
                 else if (!isSettingNoBlink)
-                    EditorGUILayout.HelpBox("Avatarを複製してNoBlinkを設定します", MessageType.Info);
+                    EditorGUILayout.HelpBox("Avatarを複製してまばたき防止機構を設定します", MessageType.Info);
                 else if (isSettingNoBlink && useAfkSystem && !isSettingAfkSystem)
-                    EditorGUILayout.HelpBox("Avatarを複製してAFKSystemを設定します", MessageType.Info);
+                    EditorGUILayout.HelpBox("Avatarを複製してAFK機構を設定します", MessageType.Info);
+                else if (useAfkSystem && isSettingAfkSystem)
+                    EditorGUILayout.HelpBox("AFK機構は再設定できません。AFK機構を設定する前のアバターを選択してください", MessageType.Error);
                 else
                     EditorGUILayout.HelpBox("AnimationClipsを編集してNoBlinkに対応させます", MessageType.Warning);
             }
@@ -433,7 +435,8 @@ namespace VRCDeveloperTool
                 blinkController == null || 
                 blinkAnimClip == null ||
                 blinkBlendShapeIndices == null ||
-                blinkBlendShapeIndices.All(x => x == -1));
+                blinkBlendShapeIndices.All(x => x == -1) ||
+                (useAfkSystem && isSettingAfkSystem));
             {
                 using (new EditorGUILayout.HorizontalScope())
                 {
