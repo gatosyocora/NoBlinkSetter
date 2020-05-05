@@ -923,6 +923,8 @@ namespace VRCDeveloperTool
         /// <returns></returns>
         private bool CheckSettingNoBlink(GameObject obj)
         {
+            if (obj == null) return false;
+
             return ((obj.transform).Find(NO_BLINK_ANIMATOR_OBJ_NAME) != null);
         }
 
