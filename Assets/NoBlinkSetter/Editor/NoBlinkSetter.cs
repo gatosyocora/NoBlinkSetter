@@ -445,7 +445,7 @@ namespace VRCDeveloperTool
                             targetAvatar = noBlinkAvatar;
                             GetAvatarInfo(targetAvatar);
                             saveFolderPath = GetSaveFolderPath(standingAnimController);
-                            isSettingNoBlink = true;
+                            isSettingNoBlink = CheckSettingNoBlink(targetAvatar.gameObject);
                             isSettingAfkSystem = CheckSettingAfkSystem(targetAvatar.gameObject, blinkController);
                             duplicateAvatarAnimatorController = false;
                         }
