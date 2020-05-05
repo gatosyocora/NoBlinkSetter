@@ -515,6 +515,21 @@ namespace VRCDeveloperTool
                 }
                 
             }
+            else if (!isSettingAfkSystem && useAfkSystem)
+            {
+                objNoBlink = DuplicationAvatarGameObject(obj);
+                objNoBlink.name = GatoEditorUtility.AddKeywordToEnd(obj.name, AFK_ASSET_NAME);
+                obj.SetActive(false);
+
+                noBlinkAvatar = objNoBlink.GetComponent<VRC_AvatarDescriptor>();
+                faceMesh = noBlinkAvatar.VisemeSkinnedMesh;
+
+                blinkAnimator = GetBlinkAnimator(faceMesh.gameObject);
+                if (blinkAnimator == null) return null;
+
+                var noBlinkAnimatorObjTrans = objNoBlink.transform.Find(NO_BLINK_ANIMATOR_OBJ_NAME);
+                noBlinkAnimatorObj = noBlinkAnimatorObjTrans.gameObject;
+            }
             else
             {
                 objNoBlink = obj;
@@ -537,7 +552,7 @@ namespace VRCDeveloperTool
             }
 
             // AFK Systemを設定する
-            if (useAfkSystem)
+            if (!isSettingAfkSystem && useAfkSystem)
             {
                 var constraintObj = new GameObject("Constraint");
                 var constraintTrans = constraintObj.transform;
