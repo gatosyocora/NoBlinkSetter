@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using UnityEditor.Animations;
 using System.IO;
 using UnityEngine.Animations;
+using Gatosyocora;
 
 // ver 1.1
 // © 2019 gatosyocora
@@ -83,7 +84,7 @@ namespace VRCDeveloperTool
 
         private void OnEnable()
         {
-            noBlinkSetterFolderPath = GetFolderPathFromName("NoBlinkSetter");
+            noBlinkSetterFolderPath = GatoEditorUtility.GetFolderPathFromName("NoBlinkSetter");
         }
 
         private void OnGUI()
@@ -506,7 +507,7 @@ namespace VRCDeveloperTool
 
                 // まばたき防止Animationを設定
                 var noBlinkAnim = CreateNoBlinkAnimationClip("AnimationStopAnimation_" +obj.name, noBlinkSetterFolderPath);
-                var path = GetHierarchyPathFromObj1ToObj2(noBlinkAnimatorObj, blinkAnimator.gameObject);
+                var path = GatoEditorUtility.GetHierarchyPathFromObj1ToObj2(noBlinkAnimatorObj, blinkAnimator.gameObject);
                 ChangeAnimationKeysPath(ref noBlinkAnim, path);
                 var states = noBlinkAnimatorController.layers[0].stateMachine.states.ToList();
                 foreach (var s in states)
@@ -566,7 +567,7 @@ namespace VRCDeveloperTool
 
                 if (afkConstraintTarget != null)
                 {
-                    afkConstraintTarget = GetCorrespondTransformBetweenDuplicatedObjects(obj, objNoBlink, afkConstraintTarget);
+                    afkConstraintTarget = GatoEditorUtility.GetCorrespondTransformBetweenDuplicatedObjects(obj, objNoBlink, afkConstraintTarget);
                     constraintTrans.position = afkConstraintTarget.position;
                     constraintTrans.rotation = afkConstraintTarget.rotation;
 
@@ -592,7 +593,7 @@ namespace VRCDeveloperTool
                 }
                 else
                 {
-                    var duplicatedAfkEffect = GetCorrespondTransformBetweenDuplicatedObjects(obj, objNoBlink, afkEffect.transform);
+                    var duplicatedAfkEffect = GatoEditorUtility.GetCorrespondTransformBetweenDuplicatedObjects(obj, objNoBlink, afkEffect.transform);
                     afkEffect = duplicatedAfkEffect.gameObject;
                     afkEffect.name = "afk_" + afkEffect.name;
                 }
@@ -800,25 +801,6 @@ namespace VRCDeveloperTool
         }
 
         /// <summary>
-        /// 特定のオブジェクトから特定のオブジェクトまでのパスを取得する
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        private string GetHierarchyPathFromObj1ToObj2(GameObject obj1, GameObject obj2)
-        {
-            string path = obj2.name;
-            var parent = obj2.transform.parent;
-            while (parent != null)
-            {
-                if (parent.gameObject.name == obj1.name) return path;
-
-                path = parent.name + "/" + path;
-                parent = parent.parent;
-            }
-            return path;
-        }
-
-        /// <summary>
         /// 設定されている表情用のAnimationClipのパスを変更し, まばたき防止用のパスを追加する。まばたきシェイプキーを削除する
         /// </summary>
         /// <param name="controller"></param>
@@ -828,7 +810,7 @@ namespace VRCDeveloperTool
         {
             if (controller == null) return;
 
-            var new_path = GetHierarchyPath(targetObj);
+            var new_path = GatoEditorUtility.GetHierarchyPath(targetObj);
 
             AnimationClip animClip_origin = null, animClip = null;
             string fileName = "";
@@ -920,25 +902,6 @@ namespace VRCDeveloperTool
         }
 
         /// <summary>
-        /// 特定のオブジェクトまでのパスを取得する
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        public string GetHierarchyPath(GameObject obj)
-        {
-            string path = obj.name;
-            Transform parent = obj.transform.parent;
-            while (parent != null)
-            {
-                if (parent.parent == null) return path;
-
-                path = parent.name + "/" + path;
-                parent = parent.parent;
-            }
-            return path;
-        }
-
-        /// <summary>
         /// NoBlinkが設定されているか調べる
         /// </summary>
         /// <param name="obj"></param>
@@ -961,17 +924,6 @@ namespace VRCDeveloperTool
             // 設定されていないので複製不可
             if (controller == null) return false;
             return !controller.name.EndsWith(NOBLINK_ASSET_NAME);
-        }
-
-        /// <summary>
-        /// フォルダ名からフォルダパスを取得する
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        private string GetFolderPathFromName(string folderName)
-        {
-            var guid = AssetDatabase.FindAssets(folderName + " t:Folder").FirstOrDefault();
-            return AssetDatabase.GUIDToAssetPath(guid);
         }
 
         /// <summary>
@@ -1106,7 +1058,7 @@ namespace VRCDeveloperTool
 
             // AFKEffectのキーを追加する
             // 特定のGameObjectを0フレーム目に非アクティブ, 最後のフレームでアクティブ
-            var path = GetHierarchyPathFromObj1ToObj2(blinkAnimator.gameObject, effectObj);
+            var path = GatoEditorUtility.GetHierarchyPathFromObj1ToObj2(blinkAnimator.gameObject, effectObj);
             var effectBinding = new EditorCurveBinding
             {
                 type = typeof(GameObject),
@@ -1151,7 +1103,7 @@ namespace VRCDeveloperTool
             var headTrans = avatarAnimator.GetBoneTransform(HumanBodyBones.Head);
             if (headTrans == null) return false;
 
-            var headPath = GetHierarchyPath(headTrans.gameObject);
+            var headPath = GatoEditorUtility.GetHierarchyPath(headTrans.gameObject);
             if (!headPath.EndsWith("Armature/Hips/Spine/Chest/Neck/Head")) return false;
 
             if (headTrans.Find("LeftEye") == null || headTrans.Find("RightEye") == null) return false;
@@ -1396,22 +1348,6 @@ namespace VRCDeveloperTool
             }
 
             return blendShapeNameList;
-        }
-
-        /// <summary>
-        /// 複製された2つのオブジェクト間で片方の特定のTransformに対応したTransformを取得する
-        /// </summary>
-        /// <param name="source"></param>
-        /// <param name="duplicated"></param>
-        /// <param name="target"></param>
-        /// <returns></returns>
-        private Transform GetCorrespondTransformBetweenDuplicatedObjects(GameObject source, GameObject duplicated, Transform target)
-        {
-            if (source.transform == target) return duplicated.transform;
-
-            var path = GetHierarchyPathFromObj1ToObj2(source, target.gameObject);
-
-            return duplicated.transform.Find(path);
         }
 
         /// <summary>
