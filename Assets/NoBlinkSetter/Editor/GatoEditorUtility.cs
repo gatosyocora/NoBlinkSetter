@@ -5,95 +5,164 @@ using UnityEditor;
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Linq;
 
-public class GatoEditorUtility
+namespace Gatosyocora
 {
-    private const char BSLASH = '\\';
-
-    public static void NonIndentHelpBox(string message, MessageType messageType)
+    public class GatoEditorUtility
     {
-        var currentIndentLevel = EditorGUI.indentLevel;
-        EditorGUI.indentLevel = 0;
-        EditorGUILayout.HelpBox(message, messageType);
-        EditorGUI.indentLevel = currentIndentLevel;
-    }
+        private const char BSLASH = '\\';
 
-    public static void NonIndentButton(string text, Action action)
-    {
-        var currentIndentLevel = EditorGUI.indentLevel;
-        EditorGUI.indentLevel = 0;
-        if (GUILayout.Button(text))
+        public static void NonIndentHelpBox(string message, MessageType messageType)
         {
-            action.Invoke();
-        }
-        EditorGUI.indentLevel = currentIndentLevel;
-    }
-
-    public static bool CreateNoExistFolders(string path)
-    {
-        string directoryPath;
-        if (string.IsNullOrEmpty(Path.GetExtension(path)))
-        {
-            directoryPath = path;
-        }
-        else
-        {
-            directoryPath = Path.GetDirectoryName(path);
+            var currentIndentLevel = EditorGUI.indentLevel;
+            EditorGUI.indentLevel = 0;
+            EditorGUILayout.HelpBox(message, messageType);
+            EditorGUI.indentLevel = currentIndentLevel;
         }
 
-        if (!Directory.Exists(directoryPath))
+        public static void NonIndentButton(string text, Action action)
         {
-            var directories = directoryPath.Split(BSLASH);
-
-            directoryPath = "Assets";
-            for (int i = 1; i < directories.Length; i++)
+            var currentIndentLevel = EditorGUI.indentLevel;
+            EditorGUI.indentLevel = 0;
+            if (GUILayout.Button(text))
             {
-                if (!Directory.Exists(directoryPath +BSLASH+ directories[i]))
-                {
-                    AssetDatabase.CreateFolder(directoryPath, directories[i]);
-                }
-
-                directoryPath += BSLASH + directories[i];
+                action.Invoke();
             }
+            EditorGUI.indentLevel = currentIndentLevel;
+        }
+
+        public static bool CreateNoExistFolders(string path)
+        {
+            string directoryPath;
+            if (string.IsNullOrEmpty(Path.GetExtension(path)))
+            {
+                directoryPath = path;
+            }
+            else
+            {
+                directoryPath = Path.GetDirectoryName(path);
+            }
+
+            if (!Directory.Exists(directoryPath))
+            {
+                var directories = directoryPath.Split(BSLASH);
+
+                directoryPath = "Assets";
+                for (int i = 1; i < directories.Length; i++)
+                {
+                    if (!Directory.Exists(directoryPath + BSLASH + directories[i]))
+                    {
+                        AssetDatabase.CreateFolder(directoryPath, directories[i]);
+                    }
+
+                    directoryPath += BSLASH + directories[i];
+                }
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// 任意のアセットを複製する
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="newAssetName"></param>
+        /// <param name="saveFolderPath"></param>
+        /// <returns></returns>
+        public static T DuplicateAsset<T>(T source, string newAssetPath) where T : UnityEngine.Object
+        {
+            var sourcePath = AssetDatabase.GetAssetPath(source);
+            return DuplicateAsset<T>(sourcePath, newAssetPath);
+        }
+
+        public static T DuplicateAsset<T>(string sourcePath, string newAssetPath) where T : UnityEngine.Object
+        {
+            var newFolderPath = Path.GetDirectoryName(newAssetPath);
+            CreateNoExistFolders(newFolderPath);
+            var newPath = AssetDatabase.GenerateUniqueAssetPath(newAssetPath);
+            AssetDatabase.CopyAsset(sourcePath, newPath);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-            return true;
+
+            var newAsset = AssetDatabase.LoadAssetAtPath(newPath, typeof(T)) as T;
+
+            return newAsset;
         }
 
-        return false;
-    }
+        public static string AddKeywordToEnd(string target, string keyword)
+        {
+            var normalString = Regex.Replace(target, keyword + ".*", string.Empty);
+            return normalString + keyword;
+        }
 
-    /// <summary>
-    /// 任意のアセットを複製する
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="source"></param>
-    /// <param name="newAssetName"></param>
-    /// <param name="saveFolderPath"></param>
-    /// <returns></returns>
-    public static T DuplicateAsset<T>(T source, string newAssetPath) where T : UnityEngine.Object
-    {
-        var sourcePath = AssetDatabase.GetAssetPath(source);
-        return DuplicateAsset<T>(sourcePath, newAssetPath);
-    }
+        /// <summary>
+        /// 特定のオブジェクトから特定のオブジェクトまでのパスを取得する
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static string GetHierarchyPathFromObj1ToObj2(GameObject obj1, GameObject obj2)
+        {
+            string path = obj2.name;
+            var parent = obj2.transform.parent;
+            while (parent != null)
+            {
+                if (parent.gameObject.name == obj1.name) return path;
 
-    public static T DuplicateAsset<T>(string sourcePath, string newAssetPath) where T : UnityEngine.Object
-    {
-        var newFolderPath = Path.GetDirectoryName(newAssetPath);
-        CreateNoExistFolders(newFolderPath);
-        var newPath = AssetDatabase.GenerateUniqueAssetPath(newAssetPath);
-        AssetDatabase.CopyAsset(sourcePath, newPath);
-        AssetDatabase.SaveAssets();
-        AssetDatabase.Refresh();
+                path = parent.name + "/" + path;
+                parent = parent.parent;
+            }
+            return path;
+        }
 
-        var newAsset = AssetDatabase.LoadAssetAtPath(newPath, typeof(T)) as T;
+        /// <summary>
+        /// 特定のオブジェクトまでのパスを取得する
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static string GetHierarchyPath(GameObject obj)
+        {
+            string path = obj.name;
+            Transform parent = obj.transform.parent;
+            while (parent != null)
+            {
+                if (parent.parent == null) return path;
 
-        return newAsset;
-    }
+                path = parent.name + "/" + path;
+                parent = parent.parent;
+            }
+            return path;
+        }
 
-    public static string AddKeywordToEnd(string target, string keyword)
-    {
-        var normalString = Regex.Replace(target, keyword + ".*", string.Empty);
-        return normalString + keyword;
+        /// <summary>
+        /// フォルダ名からフォルダパスを取得する
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static string GetFolderPathFromName(string folderName)
+        {
+            var guid = AssetDatabase.FindAssets(folderName + " t:Folder").FirstOrDefault();
+            return AssetDatabase.GUIDToAssetPath(guid);
+        }
+
+        /// <summary>
+        /// 複製された2つのオブジェクト間で片方の特定のTransformに対応したTransformを取得する
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="duplicated"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        public static Transform GetCorrespondTransformBetweenDuplicatedObjects(GameObject source, GameObject duplicated, Transform target)
+        {
+            if (source.transform == target) return duplicated.transform;
+
+            var path = GetHierarchyPathFromObj1ToObj2(source, target.gameObject);
+
+            return duplicated.transform.Find(path);
+        }
     }
 }
