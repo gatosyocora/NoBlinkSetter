@@ -469,7 +469,7 @@ namespace VRCDeveloperTool
             if (!isSettingNoBlink)
             {
                 objNoBlink = DuplicationAvatarGameObject(obj);
-                objNoBlink.name = obj.name + NOBLINK_ASSET_NAME;
+                objNoBlink.name = GatoEditorUtility.AddKeywordToEnd(obj.name, NOBLINK_ASSET_NAME);
                 obj.SetActive(false);
 
                 noBlinkAvatar = objNoBlink.GetComponent<VRC_AvatarDescriptor>();
@@ -619,7 +619,7 @@ namespace VRCDeveloperTool
 
                 blinkAnimator.enabled = false;
 
-                objNoBlink.name += AFK_ASSET_NAME;
+                objNoBlink.name = GatoEditorUtility.AddKeywordToEnd(objNoBlink.name, AFK_ASSET_NAME);
             }
 
             if (duplicateAvatarAnimatorController)
