@@ -579,16 +579,19 @@ namespace VRCDeveloperTool
                 {
                     var prefab = AssetDatabase.LoadAssetAtPath(noBlinkSetterFolderPath + AFK_EFFECT_ZZZ_PATH, typeof(GameObject)) as GameObject;
                     afkEffect = Instantiate(prefab) as GameObject;
+                    afkEffect.name = "afk_zzz";
                 }
                 else if (afkEffectType == AFK_EFFECT_TYPE.BUBBLE)
                 {
                     var prefab = AssetDatabase.LoadAssetAtPath(noBlinkSetterFolderPath + AFK_EFFECT_BUBBLE_PATH, typeof(GameObject)) as GameObject;
                     afkEffect = Instantiate(prefab) as GameObject;
+                    afkEffect.name = "afk_bubble";
                 }
                 else
                 {
                     var duplicatedAfkEffect = GetCorrespondTransformBetweenDuplicatedObjects(obj, objNoBlink, afkEffect.transform);
                     afkEffect = duplicatedAfkEffect.gameObject;
+                    afkEffect.name = "afk_" + afkEffect.name;
                 }
 
                 var afkEffectTrans = afkEffect.transform;
