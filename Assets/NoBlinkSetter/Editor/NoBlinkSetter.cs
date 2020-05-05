@@ -411,10 +411,17 @@ namespace VRCDeveloperTool
 
             EditorGUILayout.Space();
 
-            if (targetAvatar != null && !isSettingNoBlink)
-                EditorGUILayout.HelpBox("Avatarを複製してNoBlinkを設定します", MessageType.Info);
-            else if (targetAvatar != null && isSettingNoBlink)
-                EditorGUILayout.HelpBox("AnimationClipsを編集してNoBlinkに対応させます", MessageType.Warning);
+            if (targetAvatar != null)
+            {
+                if (!isSettingNoBlink && useAfkSystem)
+                    EditorGUILayout.HelpBox("Avatarを複製してNoBlinkとAFKSystemを設定します", MessageType.Info);
+                else if (!isSettingNoBlink)
+                    EditorGUILayout.HelpBox("Avatarを複製してNoBlinkを設定します", MessageType.Info);
+                else if (isSettingNoBlink && useAfkSystem)
+                    EditorGUILayout.HelpBox("Avatarを複製してAFKSystemを設定します", MessageType.Info);
+                else if (isSettingNoBlink && !useAfkSystem)
+                    EditorGUILayout.HelpBox("AnimationClipsを編集してNoBlinkに対応させます", MessageType.Warning);
+            }
 
             EditorGUI.BeginDisabledGroup(
                 targetAvatar == null || 
