@@ -421,9 +421,9 @@ namespace VRCDeveloperTool
                     EditorGUILayout.HelpBox("Avatarを複製してNoBlinkとAFKSystemを設定します", MessageType.Info);
                 else if (!isSettingNoBlink)
                     EditorGUILayout.HelpBox("Avatarを複製してNoBlinkを設定します", MessageType.Info);
-                else if (isSettingNoBlink && useAfkSystem)
+                else if (isSettingNoBlink && useAfkSystem && !isSettingAfkSystem)
                     EditorGUILayout.HelpBox("Avatarを複製してAFKSystemを設定します", MessageType.Info);
-                else if (isSettingNoBlink && !useAfkSystem)
+                else
                     EditorGUILayout.HelpBox("AnimationClipsを編集してNoBlinkに対応させます", MessageType.Warning);
             }
 
@@ -446,6 +446,7 @@ namespace VRCDeveloperTool
                             GetAvatarInfo(targetAvatar);
                             saveFolderPath = GetSaveFolderPath(standingAnimController);
                             isSettingNoBlink = true;
+                            isSettingAfkSystem = CheckSettingAfkSystem(targetAvatar.gameObject, blinkController);
                             duplicateAvatarAnimatorController = false;
                         }
 
