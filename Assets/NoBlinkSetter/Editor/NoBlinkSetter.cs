@@ -211,7 +211,7 @@ namespace VRCDeveloperTool
                         }
                         if (blinkController != null)
                         {
-                            blinkAnimClip = blinkController.layers[0].stateMachine.states[0].state.motion as AnimationClip;
+                            blinkAnimClip = GetBlinkAnimationFromBlinkController(blinkController);
                         }
                         if (blinkAnimClip != null && faceRenderer != null)
                         {
@@ -320,6 +320,10 @@ namespace VRCDeveloperTool
                             if (blinkAnimClip != null)
                             {
                                 blinkBlendShapeIndices = GetBlinkBlendShapeIndices(blinkAnimClip, faceRenderer);
+                                if (blinkController != null)
+                                {
+                                    SetBlinkAnimationClipToBlinkController(blinkAnimClip, blinkController);
+                                }
                             }
                         }
                     }
@@ -553,7 +557,7 @@ namespace VRCDeveloperTool
             if (createdNewBlinkAnimation)
             {
                 blinkAnimClip = newBlinkAnimClip;
-                blinkController.layers[0].stateMachine.states[0].state.motion = blinkAnimClip;
+                SetBlinkAnimationClipToBlinkController(blinkAnimClip, blinkController);
             }
 
             // AFK Systemを設定する
@@ -616,7 +620,7 @@ namespace VRCDeveloperTool
                     blinkController = GatoEditorUtility.DuplicateAsset<AnimatorController>(blinkController, saveFolderPath +"\\"+fileName);
                     blinkAnimator.runtimeAnimatorController = blinkController;
                     blinkAnimClip = afkBlinkAnimClip;
-                    blinkController.layers[0].stateMachine.states[0].state.motion = blinkAnimClip;
+                    SetBlinkAnimationClipToBlinkController(blinkAnimClip, blinkController);
                 }
 
                 foreach (int blinkBlendShapeIndex in blinkBlendShapeIndices)
@@ -723,7 +727,7 @@ namespace VRCDeveloperTool
 
                 if (blinkController != null)
                 {
-                    blinkAnimClip = blinkController.layers[0].stateMachine.states[0].state.motion as AnimationClip;
+                    blinkAnimClip = GetBlinkAnimationFromBlinkController(blinkController);
                 }
 
                 // まばたきシェイプキーを取得
@@ -1228,7 +1232,7 @@ namespace VRCDeveloperTool
                 var originBlinkAnimClipPath = noBlinkSetterFolderPath + BLINK_ANIMATION_CLIP_PATH;
                 var newBlinkAnimClipPath = saveFolderPath + "\\" + "BlinkAnimation" + avatarName + ".anim";
                 blinkAnimClip = GatoEditorUtility.DuplicateAsset<AnimationClip>(originBlinkAnimClipPath, newBlinkAnimClipPath);
-                blinkController.layers[0].stateMachine.states[0].state.motion = blinkAnimClip;
+                SetBlinkAnimationClipToBlinkController(blinkAnimClip, blinkController);
 
                 var originalBlinkBinding = AnimationUtility.GetCurveBindings(blinkAnimClip).First();
                 var blinkCurve = AnimationUtility.GetEditorCurve(blinkAnimClip, originalBlinkBinding);
@@ -1378,6 +1382,20 @@ namespace VRCDeveloperTool
                 return true;
 
             return false;
+        }
+
+        private bool SetBlinkAnimationClipToBlinkController(AnimationClip animClip, AnimatorController controller)
+        {
+            if (animClip == null || controller == null) return false;
+
+            controller.layers[0].stateMachine.states[0].state.motion = animClip;
+            return true;
+        }
+
+        private AnimationClip GetBlinkAnimationFromBlinkController(AnimatorController controller)
+        {
+            if (controller == null) return null;
+            return controller.layers[0].stateMachine.states[0].state.motion as AnimationClip;
         }
     }
 }
