@@ -466,8 +466,7 @@ namespace VRCDeveloperTool
             SkinnedMeshRenderer faceMesh;
             // まばたき防止ギミックが設定されていなければ設定する
             GameObject noBlinkAnimatorObj = null;
-            var noBlinkAnimatorObjTrans = (obj.transform).Find(NO_BLINK_ANIMATOR_OBJ_NAME);
-            if (noBlinkAnimatorObjTrans == null)
+            if (!isSettingNoBlink)
             {
                 objNoBlink = DuplicationAvatarGameObject(obj);
                 objNoBlink.name = obj.name + NOBLINK_ASSET_NAME;
@@ -520,6 +519,7 @@ namespace VRCDeveloperTool
             {
                 objNoBlink = obj;
                 noBlinkAvatar = objNoBlink.GetComponent<VRC_AvatarDescriptor>();
+                var noBlinkAnimatorObjTrans = objNoBlink.transform.Find(NO_BLINK_ANIMATOR_OBJ_NAME);
                 noBlinkAnimatorObj = noBlinkAnimatorObjTrans.gameObject;
                 faceMesh = faceRenderer;
             }
