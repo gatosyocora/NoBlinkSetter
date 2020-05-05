@@ -10,7 +10,7 @@ using System.IO;
 using UnityEngine.Animations;
 using Gatosyocora;
 
-// ver 1.1
+// ver 2.0
 // © 2019 gatosyocora
 
 namespace VRCDeveloperTool
