@@ -387,7 +387,12 @@ namespace VRCDeveloperTool
                                                 typeof(Transform),
                                                 true) as Transform;
 
-                        GatoEditorUtility.NonIndentHelpBox("AFK用Object設定時にその親オブジェクトが接続先として設定されます", MessageType.Warning);
+                        if (afkEffectType == AFK_EFFECT_TYPE.CUSTOM)
+                        {
+                            GatoEditorUtility.NonIndentHelpBox(
+                                "AFK用Object設定時にその親オブジェクトが接続先として設定されます", 
+                                MessageType.Warning);
+                        }
                     }
                 }
 
