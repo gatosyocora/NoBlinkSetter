@@ -13,6 +13,11 @@ namespace Gatosyocora
     {
         private const char BSLASH = '\\';
 
+        /// <summary>
+        /// インデントなしのHelpbox
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="messageType"></param>
         public static void NonIndentHelpBox(string message, MessageType messageType)
         {
             var currentIndentLevel = EditorGUI.indentLevel;
@@ -21,6 +26,11 @@ namespace Gatosyocora
             EditorGUI.indentLevel = currentIndentLevel;
         }
 
+        /// <summary>
+        /// インデントなしのButton
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="action"></param>
         public static void NonIndentButton(string text, Action action)
         {
             var currentIndentLevel = EditorGUI.indentLevel;
@@ -32,6 +42,11 @@ namespace Gatosyocora
             EditorGUI.indentLevel = currentIndentLevel;
         }
 
+        /// <summary>
+        /// パス内で存在しないフォルダを作成する
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public static bool CreateNoExistFolders(string path)
         {
             string directoryPath;
@@ -94,6 +109,12 @@ namespace Gatosyocora
             return newAsset;
         }
 
+        /// <summary>
+        /// 最後にキーワードを追加する（重複なし）
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="keyword"></param>
+        /// <returns></returns>
         public static string AddKeywordToEnd(string target, string keyword)
         {
             var normalString = Regex.Replace(target, keyword + ".*", string.Empty);
