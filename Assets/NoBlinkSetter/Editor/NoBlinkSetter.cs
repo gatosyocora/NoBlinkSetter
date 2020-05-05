@@ -609,7 +609,7 @@ namespace VRCDeveloperTool
 
                 // まばたきアニメーションの最適化でまばたきアニメーションのAnimationClipを複製しているなら、
                 // まばたきアニメーションのAnimationClipを再度複製せずに上書きするようにする(duplicateAnimationClipで設定)
-                var afkBlinkAnimClip = CreateAfkBlinkAnimation(blinkAnimClip, afkMinute * 60, blinkAnimator, afkEffect, blinkBlendShapeNames, !createdNewBlinkAnimation);
+                var afkBlinkAnimClip = CreateAfkBlinkAnimation(blinkAnimClip, afkMinute * 60, blinkAnimator, afkEffect, blinkBlendShapeNames);
 
                 if (afkBlinkAnimClip != null)
                 {
@@ -957,29 +957,22 @@ namespace VRCDeveloperTool
         /// <param name="blinkAnimator"></param>
         /// <param name="effectObj"></param>
         /// <returns></returns>
-        private AnimationClip CreateAfkBlinkAnimation(AnimationClip defaultBlinkAnim, float afkTriggerTime, Animator blinkAnimator, GameObject effectObj, List<string> blinkBlendShapeNames, bool duplicateAnimationClip)
+        private AnimationClip CreateAfkBlinkAnimation(AnimationClip defaultBlinkAnim, float afkTriggerTime, Animator blinkAnimator, GameObject effectObj, List<string> blinkBlendShapeNames)
         {
             if (defaultBlinkAnim == null) return null;
 
             AnimationClip afkAnim;
             string fileName = GatoEditorUtility.AddKeywordToEnd(defaultBlinkAnim.name, AFK_ASSET_NAME) + ".anim";
-            if (duplicateAnimationClip)
-            {
-                afkAnim = GatoEditorUtility.DuplicateAsset<AnimationClip>(defaultBlinkAnim, saveFolderPath+"\\"+fileName);
-            }
-            else
-            {
-                afkAnim = defaultBlinkAnim;
-                afkAnim.name += AFK_ASSET_NAME;
-                var defaultPath = AssetDatabase.GetAssetPath(defaultBlinkAnim);
-                // RenameAssetの際に存在するファイルだとRenameできないのでUniqueな名前を取得する
-                var newAnimPath = AssetDatabase.GenerateUniqueAssetPath(Path.GetDirectoryName(defaultPath)+ "\\" + fileName);
-                fileName = Path.GetFileNameWithoutExtension(newAnimPath);
-                AssetDatabase.RenameAsset(defaultPath, fileName);
-                afkAnim = AssetDatabase.LoadAssetAtPath<AnimationClip>(newAnimPath) as AnimationClip;
-                AssetDatabase.SaveAssets();
-                AssetDatabase.Refresh();
-            }
+            afkAnim = defaultBlinkAnim;
+            afkAnim.name += AFK_ASSET_NAME;
+            var defaultPath = AssetDatabase.GetAssetPath(defaultBlinkAnim);
+            // RenameAssetの際に存在するファイルだとRenameできないのでUniqueな名前を取得する
+            var newAnimPath = AssetDatabase.GenerateUniqueAssetPath(Path.GetDirectoryName(defaultPath)+ "\\" + fileName);
+            fileName = Path.GetFileNameWithoutExtension(newAnimPath);
+            AssetDatabase.RenameAsset(defaultPath, fileName);
+            afkAnim = AssetDatabase.LoadAssetAtPath<AnimationClip>(newAnimPath) as AnimationClip;
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
 
             var bindings = AnimationUtility.GetCurveBindings(afkAnim);
 
