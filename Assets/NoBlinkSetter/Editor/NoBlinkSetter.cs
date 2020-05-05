@@ -38,6 +38,7 @@ namespace VRCDeveloperTool
 
         private float afkMinute = 3f;
         private Transform afkConstraintTarget;
+        private bool isSettingAfkSystem = false;
 
         public enum AFK_EFFECT_TYPE {ZZZ, BUBBLE, CUSTOM};
         private AFK_EFFECT_TYPE afkEffectType = AFK_EFFECT_TYPE.ZZZ;
@@ -75,6 +76,7 @@ namespace VRCDeveloperTool
                 GetAvatarInfo(targetAvatar);
                 saveFolderPath = GetSaveFolderPath(standingAnimController);
                 isSettingNoBlink = CheckSettingNoBlink(targetAvatar.gameObject);
+                isSettingAfkSystem = CheckSettingAfkSystem(targetAvatar.gameObject, blinkController);
                 duplicateAvatarAnimatorController = CheckNeedToDuplicateController(targetAvatar);
             }
         }
@@ -103,17 +105,19 @@ namespace VRCDeveloperTool
                     GetAvatarInfo(targetAvatar);
                     saveFolderPath = GetSaveFolderPath(standingAnimController);
                     isSettingNoBlink = CheckSettingNoBlink(targetAvatar.gameObject);
+                    isSettingAfkSystem = CheckSettingAfkSystem(targetAvatar.gameObject, blinkController);
                     duplicateAvatarAnimatorController = CheckNeedToDuplicateController(targetAvatar);
                 }
             }
 
             if (targetAvatar != null)
             {
-                // EyeTracking
+                // Avatar Status
                 using (new EditorGUI.IndentLevelScope())
                 {
                     EditorGUILayout.LabelField("アイトラッキング" + (hasVRCEyeTracking ? "対応アバター" : "非対応アバター"));
                     EditorGUILayout.LabelField("まばたき防止" + (isSettingNoBlink ? "設定済みアバター" : "未設定アバター"));
+                    EditorGUILayout.LabelField("AFK機構" + (isSettingAfkSystem ? "設定済みアバター" : "未設定アバター"));
                 }
 
                 // VRC_AvatarDescripterに設定してあるAnimator
@@ -1399,6 +1403,29 @@ namespace VRCDeveloperTool
             var blinkBlendShapeNames = GetBlinkBlendShapeNames(blinkAnimClip);
             var blinkBlendShapeIndices = BlendShapeNameToIndex(blinkBlendShapeNames, faceRenderer).ToList();
             return blinkBlendShapeIndices;
+        }
+
+        /// <summary>
+        /// AFK機構が設定済みか調べる
+        /// </summary>
+        /// <param name="rootObject"></param>
+        /// <param name="blinkController"></param>
+        /// <returns></returns>
+        private bool CheckSettingAfkSystem(GameObject rootObject, AnimatorController blinkController)
+        {
+            var afkAssetPattern = ".*" + AFK_ASSET_NAME + ".*";
+
+            if (rootObject == null) return false;
+
+            if (Regex.IsMatch(rootObject.name, afkAssetPattern))
+                return true;
+
+            if (blinkController == null) return false;
+
+            if (Regex.IsMatch(blinkController.name, afkAssetPattern))
+                return true;
+
+            return false;
         }
     }
 }
